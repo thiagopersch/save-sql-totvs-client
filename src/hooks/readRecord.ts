@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios from 'axios';
 
 const readRecord = async (
   dataServerName: string,
@@ -6,11 +6,11 @@ const readRecord = async (
   contexto: string,
   username: string,
   password: string,
-  tbc: string
+  tbc: string,
 ) => {
   try {
     const response = await axios.get(
-      "http://localhost:3000/totvs/read-record",
+      `${process.env.API_URL}/totvs/read-record`,
       {
         params: {
           dataServerName,
@@ -20,11 +20,11 @@ const readRecord = async (
           password,
           tbc,
         },
-      }
+      },
     );
     return response.data;
   } catch (error) {
-    console.error("Error reading record:", error);
+    console.error('Error reading record:', error);
     throw error;
   }
 };
