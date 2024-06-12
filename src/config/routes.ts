@@ -4,7 +4,7 @@ export const global = [
     name: 'Início',
   },
   {
-    path: '/SearchSentence',
+    path: '/search-sentence',
     name: 'Buscar consulta',
   },
 ];

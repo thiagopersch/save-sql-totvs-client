@@ -1,5 +1,6 @@
 import { Box, Button, Typography } from '@mui/material';
 import styled, { css } from 'styled-components';
+import media from 'styled-media-query';
 
 export const Wrapper = styled.div`
   ${({ theme }) => css`
@@ -9,6 +10,10 @@ export const Wrapper = styled.div`
     justify-content: space-between;
     padding: 4rem;
     width: 100%;
+
+    ${media.lessThan('medium')`
+      padding: 1.5rem;
+    `}
   `}
 `;
 
@@ -32,7 +37,13 @@ export const Form = styled.form`
 
 export const InputSentences = styled(Box)`
   display: flex;
-  gap: 3rem;
+  gap: 1rem;
+
+  ${media.lessThan('medium')`
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  `}
 `;
 
 export const CTA = styled(Button)`
