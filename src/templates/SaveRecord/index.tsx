@@ -1,7 +1,7 @@
 'use client';
 
-import readRecord from '@/hooks/readRecord';
-import Editor from '@monaco-editor/react';
+import { saveRecord } from '@/hooks/saveRecord';
+import { Editor } from '@monaco-editor/react';
 import { TextField, Typography } from '@mui/material';
 import { useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
@@ -9,8 +9,9 @@ import * as S from './styles';
 
 type SentencaProps = {
   codColigada: string;
-  codSentenca: string;
   codSistema: string;
+  codSentenca: string;
+  nameSentenca: string;
   sentenca: string;
   dataServerName: string;
   contexto: string;
@@ -19,15 +20,17 @@ type SentencaProps = {
   tbc: string;
 };
 
-export default function SearchSentence() {
-  const [data, setData] = useState<SentencaProps>();
-  const [error, setError] = useState('');
-  const { register, handleSubmit } = useForm<SentencaProps>({
+const SaveRecord = () => {
+  const [loading, setLoading] = useState<boolean>(false);
+  const [message, setMessage] = useState<string>('');
+  const { register, handleSubmit, setValue, watch } = useForm<SentencaProps>({
     defaultValues: {
       codColigada: '0',
       codSistema: 'S',
-      codSentenca: 'RB.PS.IM.005',
-      contexto: 'CODCOLIGADA=1;CODFILIAL=1;CODSISTEMA=S;CODTIPOCURSO=1',
+      codSentenca: 'RB.PS.IM.016',
+      nameSentenca: 'TAXA DE MATRICULA',
+      sentenca: '',
+      contexto: `CODCOLIGADA=1;CODFILIAL=1;CODSISTEMA=S;CODTIPOCURSO=1;CODUSUARIO=inscricaomatricula`,
       dataServerName: 'GlbConsSqlData',
       username: 'inscricaomatricula',
       password: 'inscricaomatricula',
@@ -35,61 +38,55 @@ export default function SearchSentence() {
     },
   });
 
-  const handleReadRecord: SubmitHandler<SentencaProps> = async (
+  const sentenca = watch('sentenca');
+  const handleSaveRecord: SubmitHandler<SentencaProps> = async (
     formData: SentencaProps,
   ) => {
-    const {
-      codColigada,
-      codSentenca,
-      codSistema,
-      contexto,
-      dataServerName,
-      password,
-      username,
-      tbc,
-    } = formData;
-    const primaryKey = `${codColigada};${codSistema};${codSentenca}`;
-
     try {
-      const result = await readRecord(
+      setLoading(true);
+      const {
+        codColigada,
+        codSistema,
+        codSentenca,
+        nameSentenca,
+        sentenca,
+        contexto,
         dataServerName,
-        primaryKey,
+        username,
+        password,
+        tbc,
+      } = formData;
+
+      const result = await saveRecord(
+        codColigada,
+        codSistema,
+        codSentenca,
+        nameSentenca,
+        sentenca,
+        dataServerName,
         contexto,
         username,
         password,
         tbc,
       );
 
-      const gConsSql = result.GlbConsSql.GConsSql[0];
-      console.log(result.GlbConsSql.GConsSql[0]);
-      const codColigada = gConsSql.CODCOLIGADA[0];
-      const codSentenca = gConsSql.CODSENTENCA[0];
-      const sentenca =
-        result.GlbConsSql.GConsSql[0].TAMANHO[0] !== '0'
-          ? gConsSql.SENTENCA[0]
-          : setError('A consulta não retornou dados.');
+      setLoading(false);
+      if (result?.status === 201) {
+        setMessage(result.data);
+      }
 
-      setData({
-        codColigada,
-        codSistema,
-        codSentenca,
-        contexto,
-        sentenca,
-        dataServerName,
-        password,
-        username,
-        tbc,
-      });
+      return result;
     } catch (error) {
-      console.error('Error fetching data:', error);
+      console.error('Erro ao salvar o registro:', error);
     }
   };
+
   return (
     <S.Wrapper>
       <S.Title variant="h4" color="primary">
-        Buscar uma consulta no TOTVS
+        Enviar uma consulta para o TOTVS
       </S.Title>
-      <S.Form onSubmit={handleSubmit(handleReadRecord)}>
+      <S.Form onSubmit={handleSubmit(handleSaveRecord)}>
         <S.InputSentences>
           <TextField
             type="text"
@@ -97,6 +94,7 @@ export default function SearchSentence() {
             label="Código da Coligada"
             variant="filled"
             {...register('codColigada')}
+            disabled={loading}
             fullWidth
             required
           />
@@ -106,6 +104,7 @@ export default function SearchSentence() {
             label="Código do Sistema"
             variant="filled"
             {...register('codSistema')}
+            disabled={loading}
             required
             fullWidth
           />
@@ -115,6 +114,17 @@ export default function SearchSentence() {
             label="Código da Sentença"
             variant="filled"
             {...register('codSentenca')}
+            disabled={loading}
+            required
+            fullWidth
+          />
+          <TextField
+            type="text"
+            id="nameSentenca"
+            label="Nome da Sentença"
+            variant="filled"
+            {...register('nameSentenca')}
+            disabled={loading}
             required
             fullWidth
           />
@@ -126,6 +136,7 @@ export default function SearchSentence() {
             label="Contexto"
             variant="filled"
             {...register('contexto')}
+            disabled={loading}
             required
             fullWidth
           />
@@ -135,6 +146,7 @@ export default function SearchSentence() {
             label="DataServer"
             variant="filled"
             {...register('dataServerName')}
+            disabled={loading}
             required
             fullWidth
           />
@@ -147,6 +159,7 @@ export default function SearchSentence() {
             variant="filled"
             {...register('tbc')}
             placeholder="Ex: http://localhost:8051/"
+            disabled={loading}
             required
             fullWidth
           />
@@ -156,6 +169,7 @@ export default function SearchSentence() {
             label="Usuário"
             variant="filled"
             {...register('username')}
+            disabled={loading}
             required
             fullWidth
           />
@@ -165,38 +179,42 @@ export default function SearchSentence() {
             label="Senha"
             variant="filled"
             {...register('password')}
+            disabled={loading}
             required
             fullWidth
           />
         </S.InputSentences>
-        <S.CTA color="primary" variant="contained" size="large" type="submit">
-          Buscar consulta
-        </S.CTA>
-      </S.Form>
-      {data && error === '' && (
         <Editor
-          height="50vh"
+          height="40vh"
           language="sql"
           defaultLanguage="sql"
           theme="vs-dark"
-          value={data.sentenca}
-          options={{ readOnly: true }}
-        />
-      )}
-      {error && (
-        <Typography
-          sx={{
-            color: 'red',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            alignContent: 'center',
-            fontWeight: 'bold',
+          value={sentenca}
+          loading="Carregando..."
+          defaultValue="/*Insira a sentença aqui...*/"
+          onChange={(value) => setValue('sentenca', value || '')}
+          options={{
+            automaticLayout: true,
+            autoIndent: true,
+            formatOnType: true,
+            formatOnPaste: true,
+            wordWrap: 'on',
+            wrappingIndent: 'indent',
           }}
+        />
+        <S.CTA
+          color="primary"
+          variant="contained"
+          size="large"
+          type="submit"
+          disabled={loading}
         >
-          {error}
-        </Typography>
-      )}
+          {!loading ? 'Enviar' : 'Enviando...'}
+        </S.CTA>
+      </S.Form>
+      {message && <Typography sx={{ color: 'red' }}>{message}</Typography>}
     </S.Wrapper>
   );
-}
+};
+
+export default SaveRecord;
