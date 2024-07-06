@@ -25,16 +25,16 @@ const SaveRecord = () => {
   const [message, setMessage] = useState<string>('');
   const { register, handleSubmit, setValue, watch } = useForm<SentencaProps>({
     defaultValues: {
-      codColigada: '0',
-      codSistema: 'S',
-      codSentenca: 'RB.PS.IM.016',
-      nameSentenca: 'TAXA DE MATRICULA',
+      codColigada: '',
+      codSistema: '',
+      codSentenca: '',
+      nameSentenca: '',
       sentenca: '',
       contexto: `CODCOLIGADA=1;CODFILIAL=1;CODSISTEMA=S;CODTIPOCURSO=1;CODUSUARIO=inscricaomatricula`,
       dataServerName: 'GlbConsSqlData',
-      username: 'inscricaomatricula',
-      password: 'inscricaomatricula',
-      tbc: 'http://localhost:8051',
+      username: '',
+      password: '',
+      tbc: '',
     },
   });
 
@@ -146,7 +146,8 @@ const SaveRecord = () => {
             label="DataServer"
             variant="filled"
             {...register('dataServerName')}
-            disabled={loading}
+            disabled
+            aria-readonly={true}
             required
             fullWidth
           />

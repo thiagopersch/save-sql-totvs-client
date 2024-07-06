@@ -27,13 +27,13 @@ const ExecuteSentece = () => {
     mode: 'all',
     resolver: zodResolver(schema),
     defaultValues: {
-      codColigada: '0',
-      codSistema: 'S',
-      codSentenca: 'RB.PS.IM.005',
-      parameters: 'CODINSCRICAO=1-74-482',
-      username: 'inscricaomatricula',
-      password: 'inscricaomatricula',
-      tbc: 'http://localhost:8051',
+      codColigada: '',
+      codSistema: '',
+      codSentenca: '',
+      parameters: '',
+      username: '',
+      password: '',
+      tbc: '',
     },
   });
 

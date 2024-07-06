@@ -5,8 +5,6 @@ import {
   Card,
   CardActions,
   CardContent,
-  Grid,
-  List,
   Typography,
 } from '@mui/material';
 import Link from 'next/link';
@@ -87,29 +85,6 @@ export default function Home() {
           </Fragment>
         </Box>
       ))}
-      <Grid
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'center',
-          margin: '0 30rem',
-        }}
-      >
-        <Typography variant="h4" color="gray">
-          Itens a serem feitos
-        </Typography>
-        <List>0. Criar autenticação email/senha</List>
-        <List>1. Criar CRUD dos clientes</List>
-        <List>1.1. Criar CRUD dos acessos TOTVS aos clientes</List>
-        <List>2. Criar CRUD do TBC</List>
-        <List>3. Criar CRUD das consultas</List>
-        <List>
-          4. Criar integração para buscar consultas no TOTVS e salvar na base de
-          dados para fins de backups
-        </List>
-        <List>5. Criar tela de envio de todas as consultas para o TOTVS</List>
-        <List>5.1. Criar envio de consultas individuais para o TOTVS</List>
-      </Grid>
     </>
   );
 }

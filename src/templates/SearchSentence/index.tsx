@@ -24,14 +24,14 @@ export default function SearchSentence() {
   const [error, setError] = useState('');
   const { register, handleSubmit } = useForm<SentencaProps>({
     defaultValues: {
-      codColigada: '0',
-      codSistema: 'S',
-      codSentenca: 'RB.PS.IM.005',
+      codColigada: '',
+      codSistema: '',
+      codSentenca: '',
       contexto: 'CODCOLIGADA=1;CODFILIAL=1;CODSISTEMA=S;CODTIPOCURSO=1',
       dataServerName: 'GlbConsSqlData',
-      username: 'inscricaomatricula',
-      password: 'inscricaomatricula',
-      tbc: 'http://localhost:8051',
+      username: '',
+      password: '',
+      tbc: '',
     },
   });
 
@@ -135,6 +135,8 @@ export default function SearchSentence() {
             label="DataServer"
             variant="filled"
             {...register('dataServerName')}
+            disabled
+            aria-readonly={true}
             required
             fullWidth
           />
