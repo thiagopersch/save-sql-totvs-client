@@ -20,7 +20,6 @@ const ExecuteSentece = () => {
   const {
     register,
     handleSubmit,
-    control,
     formState: { errors, isSubmitting },
   } = useForm<Schema>({
     criteriaMode: 'all',
@@ -103,7 +102,7 @@ const ExecuteSentece = () => {
             label="Parâmetros"
             {...register('parameters')}
             error={!!errors.parameters}
-            helperText={errors.parameters?.message}
+            helperText="Ex: PARAM=VALUE"
             variant="filled"
             disabled={isSubmitting}
             fullWidth

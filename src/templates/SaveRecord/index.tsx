@@ -1,36 +1,45 @@
 'use client';
 
 import { saveRecord } from '@/hooks/saveRecord';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { Editor } from '@monaco-editor/react';
-import { TextField, Typography } from '@mui/material';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import {
+  IconButton,
+  InputAdornment,
+  TextField,
+  Typography,
+} from '@mui/material';
 import { useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
+import { z } from 'zod';
+import { schema } from './schema';
 import * as S from './styles';
 
-type SentencaProps = {
-  codColigada: string;
-  codSistema: string;
-  codSentenca: string;
-  nameSentenca: string;
-  sentenca: string;
-  dataServerName: string;
-  contexto: string;
-  username: string;
-  password: string;
-  tbc: string;
-};
+type Schema = z.infer<typeof schema>;
 
 const SaveRecord = () => {
-  const [loading, setLoading] = useState<boolean>(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [message, setMessage] = useState<string>('');
-  const { register, handleSubmit, setValue, watch } = useForm<SentencaProps>({
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    watch,
+    formState: { errors, isSubmitting },
+  } = useForm<Schema>({
+    criteriaMode: 'all',
+    mode: 'all',
+    resolver: zodResolver(schema),
     defaultValues: {
       codColigada: '',
       codSistema: '',
       codSentenca: '',
       nameSentenca: '',
       sentenca: '',
-      contexto: `CODCOLIGADA=1;CODFILIAL=1;CODSISTEMA=S;CODTIPOCURSO=1;CODUSUARIO=inscricaomatricula`,
+      contexto:
+        'CODCOLIGADA=1;CODFILIAL=1;CODSISTEMA=S;CODTIPOCURSO=1;CODUSUARIO=rubeus',
       dataServerName: 'GlbConsSqlData',
       username: '',
       password: '',
@@ -39,11 +48,16 @@ const SaveRecord = () => {
   });
 
   const sentenca = watch('sentenca');
-  const handleSaveRecord: SubmitHandler<SentencaProps> = async (
-    formData: SentencaProps,
+
+  const handleClickShowPassword = () => setShowPassword((show) => !show);
+
+  const handleMouseDownPassword = (
+    event: React.MouseEvent<HTMLButtonElement>,
   ) => {
+    event.preventDefault();
+  };
+  const handleSaveRecord: SubmitHandler<Schema> = async (formData: Schema) => {
     try {
-      setLoading(true);
       const {
         codColigada,
         codSistema,
@@ -70,7 +84,6 @@ const SaveRecord = () => {
         tbc,
       );
 
-      setLoading(false);
       if (result?.status === 201) {
         setMessage(result.data);
       }
@@ -94,7 +107,9 @@ const SaveRecord = () => {
             label="Código da Coligada"
             variant="filled"
             {...register('codColigada')}
-            disabled={loading}
+            helperText={errors.codColigada?.message}
+            error={!!errors.codColigada}
+            disabled={isSubmitting}
             fullWidth
             required
           />
@@ -103,8 +118,10 @@ const SaveRecord = () => {
             id="codSistema"
             label="Código do Sistema"
             variant="filled"
+            helperText={errors.codSistema?.message}
+            error={!!errors.codSistema}
             {...register('codSistema')}
-            disabled={loading}
+            disabled={isSubmitting}
             required
             fullWidth
           />
@@ -113,8 +130,10 @@ const SaveRecord = () => {
             id="codSentenca"
             label="Código da Sentença"
             variant="filled"
+            helperText={errors.codSentenca?.message}
+            error={!!errors.codSentenca}
             {...register('codSentenca')}
-            disabled={loading}
+            disabled={isSubmitting}
             required
             fullWidth
           />
@@ -123,8 +142,10 @@ const SaveRecord = () => {
             id="nameSentenca"
             label="Nome da Sentença"
             variant="filled"
+            helperText={errors.nameSentenca?.message}
+            error={!!errors.nameSentenca}
             {...register('nameSentenca')}
-            disabled={loading}
+            disabled={isSubmitting}
             required
             fullWidth
           />
@@ -135,8 +156,10 @@ const SaveRecord = () => {
             id="contexto"
             label="Contexto"
             variant="filled"
+            helperText={errors.contexto?.message}
+            error={!!errors.contexto}
             {...register('contexto')}
-            disabled={loading}
+            disabled={isSubmitting}
             required
             fullWidth
           />
@@ -145,6 +168,8 @@ const SaveRecord = () => {
             id="dataServerName"
             label="DataServer"
             variant="filled"
+            helperText={errors.dataServerName?.message}
+            error={!!errors.dataServerName}
             {...register('dataServerName')}
             disabled
             aria-readonly={true}
@@ -158,9 +183,11 @@ const SaveRecord = () => {
             id="tbc"
             label="TBC"
             variant="filled"
+            helperText={errors.tbc?.message}
+            error={!!errors.tbc}
             {...register('tbc')}
             placeholder="Ex: http://localhost:8051/"
-            disabled={loading}
+            disabled={isSubmitting}
             required
             fullWidth
           />
@@ -169,30 +196,48 @@ const SaveRecord = () => {
             id="username"
             label="Usuário"
             variant="filled"
+            helperText={errors.username?.message}
+            error={!!errors.username}
             {...register('username')}
-            disabled={loading}
+            disabled={isSubmitting}
             required
             fullWidth
           />
           <TextField
-            type="text"
+            type={showPassword ? 'text' : 'password'}
             id="password"
             label="Senha"
             variant="filled"
+            helperText={errors.password?.message}
+            error={!!errors.password}
             {...register('password')}
-            disabled={loading}
+            disabled={isSubmitting}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    aria-label="Mostrar senha"
+                    onClick={handleClickShowPassword}
+                    onMouseDown={handleMouseDownPassword}
+                    edge="end"
+                  >
+                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
             required
             fullWidth
           />
         </S.InputSentences>
         <Editor
-          height="40vh"
+          height="40dvh"
           language="sql"
           defaultLanguage="sql"
           theme="vs-dark"
           value={sentenca}
           loading="Carregando..."
-          defaultValue="/*Insira a sentença aqui...*/"
+          defaultValue={sentenca}
           onChange={(value) => setValue('sentenca', value || '')}
           options={{
             automaticLayout: true,
@@ -208,9 +253,9 @@ const SaveRecord = () => {
           variant="contained"
           size="large"
           type="submit"
-          disabled={loading}
+          disabled={isSubmitting}
         >
-          {!loading ? 'Enviar' : 'Enviando...'}
+          {!isSubmitting ? 'Enviar' : 'Enviando...'}
         </S.CTA>
       </S.Form>
       {message && <Typography sx={{ color: 'red' }}>{message}</Typography>}

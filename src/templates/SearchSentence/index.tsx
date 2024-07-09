@@ -1,33 +1,44 @@
 'use client';
 
 import readRecord from '@/hooks/readRecord';
+import { zodResolver } from '@hookform/resolvers/zod';
 import Editor from '@monaco-editor/react';
-import { TextField, Typography } from '@mui/material';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import {
+  IconButton,
+  InputAdornment,
+  TextField,
+  Typography,
+} from '@mui/material';
 import { useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
+import { z } from 'zod';
+import { schema } from './schema';
 import * as S from './styles';
 
-type SentencaProps = {
-  codColigada: string;
-  codSentenca: string;
-  codSistema: string;
-  sentenca: string;
-  dataServerName: string;
-  contexto: string;
-  username: string;
-  password: string;
-  tbc: string;
+type Schema = z.infer<typeof schema> & {
+  sentenca?: string;
 };
 
 export default function SearchSentence() {
-  const [data, setData] = useState<SentencaProps>();
+  const [showPassword, setShowPassword] = useState(false);
+  const [data, setData] = useState<Schema>();
   const [error, setError] = useState('');
-  const { register, handleSubmit } = useForm<SentencaProps>({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<Schema>({
+    criteriaMode: 'all',
+    mode: 'all',
+    resolver: zodResolver(schema),
     defaultValues: {
       codColigada: '',
       codSistema: '',
       codSentenca: '',
-      contexto: 'CODCOLIGADA=1;CODFILIAL=1;CODSISTEMA=S;CODTIPOCURSO=1',
+      contexto:
+        'CODCOLIGADA=1;CODFILIAL=1;CODSISTEMA=S;CODTIPOCURSO=1;CODUSUARIO=rubeus',
       dataServerName: 'GlbConsSqlData',
       username: '',
       password: '',
@@ -35,9 +46,15 @@ export default function SearchSentence() {
     },
   });
 
-  const handleReadRecord: SubmitHandler<SentencaProps> = async (
-    formData: SentencaProps,
+  const handleClickShowPassword = () => setShowPassword((show) => !show);
+
+  const handleMouseDownPassword = (
+    event: React.MouseEvent<HTMLButtonElement>,
   ) => {
+    event.preventDefault();
+  };
+
+  const handleReadRecord: SubmitHandler<Schema> = async (formData: Schema) => {
     const {
       codColigada,
       codSentenca,
@@ -74,9 +91,9 @@ export default function SearchSentence() {
         codSistema,
         codSentenca,
         contexto,
-        sentenca,
         dataServerName,
         password,
+        sentenca,
         username,
         tbc,
       });
@@ -87,7 +104,7 @@ export default function SearchSentence() {
   return (
     <S.Wrapper>
       <S.Title variant="h4" color="primary">
-        Buscar uma consulta no TOTVS
+        Buscar consulta no TOTVS
       </S.Title>
       <S.Form onSubmit={handleSubmit(handleReadRecord)}>
         <S.InputSentences>
@@ -97,6 +114,9 @@ export default function SearchSentence() {
             label="Código da Coligada"
             variant="filled"
             {...register('codColigada')}
+            disabled={isSubmitting}
+            helperText={errors.codColigada?.message}
+            error={!!errors.codColigada}
             fullWidth
             required
           />
@@ -106,6 +126,9 @@ export default function SearchSentence() {
             label="Código do Sistema"
             variant="filled"
             {...register('codSistema')}
+            disabled={isSubmitting}
+            helperText={errors.codSistema?.message}
+            error={!!errors.codSistema}
             required
             fullWidth
           />
@@ -115,6 +138,9 @@ export default function SearchSentence() {
             label="Código da Sentença"
             variant="filled"
             {...register('codSentenca')}
+            disabled={isSubmitting}
+            helperText={errors.codSentenca?.message}
+            error={!!errors.codSentenca}
             required
             fullWidth
           />
@@ -126,6 +152,9 @@ export default function SearchSentence() {
             label="Contexto"
             variant="filled"
             {...register('contexto')}
+            disabled={isSubmitting}
+            helperText={errors.contexto?.message}
+            error={!!errors.contexto}
             required
             fullWidth
           />
@@ -134,9 +163,11 @@ export default function SearchSentence() {
             id="dataServerName"
             label="DataServer"
             variant="filled"
+            aria-readonly={true}
             {...register('dataServerName')}
             disabled
-            aria-readonly={true}
+            helperText={errors.dataServerName?.message}
+            error={!!errors.dataServerName}
             required
             fullWidth
           />
@@ -147,8 +178,11 @@ export default function SearchSentence() {
             id="tbc"
             label="TBC"
             variant="filled"
-            {...register('tbc')}
             placeholder="Ex: http://localhost:8051/"
+            {...register('tbc')}
+            disabled={isSubmitting}
+            helperText={errors.tbc?.message}
+            error={!!errors.tbc}
             required
             fullWidth
           />
@@ -158,31 +192,58 @@ export default function SearchSentence() {
             label="Usuário"
             variant="filled"
             {...register('username')}
+            disabled={isSubmitting}
+            helperText={errors.username?.message}
+            error={!!errors.username}
             required
             fullWidth
           />
           <TextField
-            type="text"
             id="password"
+            type={showPassword ? 'text' : 'password'}
             label="Senha"
             variant="filled"
             {...register('password')}
+            disabled={isSubmitting}
+            helperText={errors.password?.message}
+            error={!!errors.password}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    aria-label="toggle password visibility"
+                    onClick={handleClickShowPassword}
+                    onMouseDown={handleMouseDownPassword}
+                    edge="end"
+                  >
+                    {showPassword ? <Visibility /> : <VisibilityOff />}
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
             required
             fullWidth
           />
         </S.InputSentences>
-        <S.CTA color="primary" variant="contained" size="large" type="submit">
+        <S.CTA
+          color="primary"
+          variant="contained"
+          size="large"
+          type="submit"
+          disabled={isSubmitting}
+        >
           Buscar consulta
         </S.CTA>
       </S.Form>
       {data && error === '' && (
         <Editor
-          height="50vh"
+          height="50dvh"
           language="sql"
           defaultLanguage="sql"
           theme="vs-dark"
+          defaultValue={data.sentenca}
           value={data.sentenca}
-          options={{ readOnly: true }}
+          options={{ readOnly: true, disabled: isSubmitting }}
         />
       )}
       {error && (
