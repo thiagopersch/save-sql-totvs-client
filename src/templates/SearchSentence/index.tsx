@@ -78,7 +78,6 @@ export default function SearchSentence() {
       );
 
       const gConsSql = result.GlbConsSql.GConsSql[0];
-      console.log(result.GlbConsSql.GConsSql[0]);
       const codColigada = gConsSql.CODCOLIGADA[0];
       const codSentenca = gConsSql.CODSENTENCA[0];
       const sentenca =
@@ -243,7 +242,7 @@ export default function SearchSentence() {
           theme="vs-dark"
           defaultValue={data.sentenca}
           value={data.sentenca}
-          options={{ readOnly: true, disabled: isSubmitting }}
+          options={{ readOnly: true }}
         />
       )}
       {error && (

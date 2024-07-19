@@ -52,7 +52,7 @@ const ExecuteSentece = () => {
       setMessage(JSON.stringify(result, null, 2));
       return result;
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 
@@ -182,7 +182,6 @@ const ExecuteSentece = () => {
           value={message}
           options={{
             automaticLayout: true,
-            autoIndent: true,
             formatOnType: true,
             formatOnPaste: true,
             wordWrap: 'on',

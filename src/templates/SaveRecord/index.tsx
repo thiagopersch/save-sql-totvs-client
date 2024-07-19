@@ -241,7 +241,6 @@ const SaveRecord = () => {
           onChange={(value) => setValue('sentenca', value || '')}
           options={{
             automaticLayout: true,
-            autoIndent: true,
             formatOnType: true,
             formatOnPaste: true,
             wordWrap: 'on',

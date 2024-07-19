@@ -12,20 +12,7 @@ import {
 } from '@mui/material';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Fragment, useState } from 'react';
-
-type Route = {
-  path: string;
-  name: string;
-};
-
-type Routes = {
-  [key: string]: Route[];
-};
-
-const routes: Routes = {
-  global,
-};
+import { useState } from 'react';
 
 const Navbar = () => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -73,16 +60,16 @@ const Navbar = () => {
               'aria-labelledby': 'basic-button',
             }}
           >
-            {Object.entries(routes).map(([key, value]) => (
-              <Fragment key={key}>
-                {value.map((value) => (
-                  <MenuItem key={key}>
-                    <Link href={value.path} style={{ textDecoration: 'none' }}>
-                      {value.name}
-                    </Link>
-                  </MenuItem>
-                ))}
-              </Fragment>
+            {global.map((value) => (
+              <MenuItem key={value.path}>
+                <Link
+                  key={value.path}
+                  href={value.path}
+                  style={{ textDecoration: 'none' }}
+                >
+                  {value.name}
+                </Link>
+              </MenuItem>
             ))}
           </Menu>
         </Toolbar>

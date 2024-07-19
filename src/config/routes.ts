@@ -12,6 +12,10 @@ export const global = [
     name: 'Salvar registro',
   },
   {
+    path: '/read-view',
+    name: 'Ler visão',
+  },
+  {
     path: '/sentence/execute',
     name: 'Executar consulta',
   },
