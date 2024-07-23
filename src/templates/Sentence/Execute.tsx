@@ -2,39 +2,98 @@
 
 import performSentence from '@/hooks/sentence/executeSentence';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Editor } from '@monaco-editor/react';
-import Visibility from '@mui/icons-material/Visibility';
-import VisibilityOff from '@mui/icons-material/VisibilityOff';
-import { Button, IconButton, InputAdornment, TextField } from '@mui/material';
-import { useState } from 'react';
+import {
+  Button,
+  IconButton,
+  InputAdornment,
+  TextField,
+  Tooltip,
+  Typography,
+} from '@mui/material';
+import {
+  DataGrid,
+  GridColDef,
+  GridToolbarContainer,
+  GridToolbarExport,
+  useGridApiRef,
+} from '@mui/x-data-grid';
+import { useEffect, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { schema } from './schema';
 import * as S from './styles';
 
-type Schema = z.infer<typeof schema>;
+import ContainerTable from '@/components/ContainerTable';
+import NoRow from '@/components/NoRow';
+import {
+  Visibility as VisibilityIcon,
+  VisibilityOff as VisibilityOffIcon,
+} from '@mui/icons-material';
+
+type Schema = z.infer<typeof schema> & {
+  rows: any[];
+};
+
+function CustomToolbar() {
+  return (
+    <GridToolbarContainer>
+      <GridToolbarExport
+        printOptions={{
+          disableToolbarButton: true,
+        }}
+        slotProps={{
+          button: {
+            color: 'primary',
+          },
+          tooltip: {
+            title: 'Exportar',
+          },
+        }}
+      />
+    </GridToolbarContainer>
+  );
+}
 
 const ExecuteSentece = () => {
+  const apiRef = useGridApiRef();
   const [showPassword, setShowPassword] = useState(false);
-  const [message, setMessage] = useState<string>('');
+  const [columns, setColumns] = useState<GridColDef[]>([]);
   const {
     register,
+    watch,
+    setValue,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { errors, isSubmitting, isSubmitted, isSubmitSuccessful },
   } = useForm<Schema>({
     criteriaMode: 'all',
     mode: 'all',
     resolver: zodResolver(schema),
     defaultValues: {
-      codColigada: '',
-      codSistema: '',
-      codSentenca: '',
-      parameters: '',
-      username: '',
-      password: '',
-      tbc: '',
+      codColigada: '0',
+      codSistema: 'S',
+      codSentenca: 'RB.PS.FV.009',
+      parameters:
+        'RA=2407855;CODCOLIGADA=4;IDPERLET=123;IDHABILITACAOFILIAL=1316',
+      username: 'rubeus',
+      password: 'LegDsVA7',
+      tbc: 'http://webportal.multivix.edu.br:8051/',
+      rows: [],
     },
   });
+
+  const rows = watch('rows');
+
+  const handleExpandedTable = () => {
+    apiRef.current.autosizeColumns({
+      includeHeaders: true,
+      includeOutliers: true,
+      expand: true,
+    });
+  };
+
+  useEffect(() => {
+    handleExpandedTable;
+  }, [handleExpandedTable]);
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
 
@@ -49,7 +108,56 @@ const ExecuteSentece = () => {
   ) => {
     try {
       const result = await performSentence(formData);
-      setMessage(JSON.stringify(result, null, 2));
+
+      let resultTable;
+      if (Array.isArray(result)) {
+        if (Array.isArray(result[0])) {
+          resultTable = result.flat().map((item: any, index: number) => ({
+            id: index,
+            ...item,
+          }));
+        } else {
+          resultTable = result.map((item: any, index: number) => ({
+            id: index,
+            ...item,
+          }));
+        }
+      } else {
+        resultTable = [result].map((item: any, index: number) => ({
+          id: index,
+          ...item,
+        }));
+      }
+
+      if (resultTable.length > 0) {
+        const cols = Object.keys(resultTable[0]).map((key) => ({
+          field: key !== '' ? key : 'NULL',
+          renderHeader: () => (
+            <Tooltip title={key} arrow>
+              <Typography
+                color="primary"
+                variant="caption"
+                sx={{ fontWeight: 'bold' }}
+              >
+                {key}
+              </Typography>
+            </Tooltip>
+          ),
+          //headerName: key,
+          renderCell(params: any) {
+            return (
+              <Tooltip title={params.value} arrow>
+                <Typography variant="caption" noWrap>
+                  {params.value}
+                </Typography>
+              </Tooltip>
+            );
+          },
+        }));
+        setColumns(cols);
+      }
+
+      setValue('rows', resultTable);
       return result;
     } catch (error) {
       console.error(error);
@@ -137,7 +245,7 @@ const ExecuteSentece = () => {
                     onMouseDown={handleMouseDownPassword}
                     edge="end"
                   >
-                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                    {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
                   </IconButton>
                 </InputAdornment>
               ),
@@ -170,25 +278,44 @@ const ExecuteSentece = () => {
           </Button>
         </S.CTA>
       </form>
-      {message && (
-        <Editor
-          theme="vs-dark"
-          height="53vh"
-          width="100%"
-          language="json"
-          loading="Carregando..."
-          defaultLanguage="json"
-          defaultValue={message}
-          value={message}
-          options={{
-            automaticLayout: true,
-            formatOnType: true,
-            formatOnPaste: true,
-            wordWrap: 'on',
-            wrappingIndent: 'indent',
-            readOnly: true,
-          }}
-        />
+      {rows && isSubmitted && (
+        <ContainerTable>
+          <S.CTA>
+            <Button
+              color="primary"
+              size="small"
+              variant="text"
+              onClick={handleExpandedTable}
+            >
+              Ajustar colunas
+            </Button>
+          </S.CTA>
+          <DataGrid
+            rows={rows}
+            columns={columns}
+            loading={!isSubmitSuccessful}
+            apiRef={apiRef}
+            density="compact"
+            autoHeight
+            slotProps={{
+              loadingOverlay: {
+                variant: 'linear-progress',
+                noRowsVariant: 'linear-progress',
+              },
+            }}
+            pageSizeOptions={[25, 50, 150]}
+            initialState={{
+              pagination: {
+                paginationModel: { page: 0, pageSize: 25 },
+              },
+            }}
+            slots={{
+              noRowsOverlay: NoRow,
+              toolbar: CustomToolbar,
+            }}
+            sx={{ '--DataGrid-overlayHeight': '18.75rem' }}
+          />
+        </ContainerTable>
       )}
     </S.Wrapper>
   );
