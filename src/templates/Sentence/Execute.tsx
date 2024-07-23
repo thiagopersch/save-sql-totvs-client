@@ -69,14 +69,13 @@ const ExecuteSentece = () => {
     mode: 'all',
     resolver: zodResolver(schema),
     defaultValues: {
-      codColigada: '0',
-      codSistema: 'S',
-      codSentenca: 'RB.PS.FV.009',
-      parameters:
-        'RA=2407855;CODCOLIGADA=4;IDPERLET=123;IDHABILITACAOFILIAL=1316',
-      username: 'rubeus',
-      password: 'LegDsVA7',
-      tbc: 'http://webportal.multivix.edu.br:8051/',
+      codColigada: '',
+      codSistema: '',
+      codSentenca: '',
+      parameters: '',
+      username: '',
+      password: '',
+      tbc: '',
       rows: [],
     },
   });
