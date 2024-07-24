@@ -146,7 +146,7 @@ const ReadViewPage = () => {
   return (
     <S.Wrapper>
       <S.Title variant="h4" color="primary">
-        Read View
+        Ler visão de consultas
       </S.Title>
       <S.Form onSubmit={handleSubmit(handleReadView)}>
         <S.InputSentences>

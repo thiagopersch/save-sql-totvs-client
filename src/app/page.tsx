@@ -46,7 +46,7 @@ export default function Home() {
             {value.map((route) => (
               <Card
                 sx={{
-                  width: '15vw',
+                  width: '20vw',
                   height: '20rem',
                   padding: '5rem',
                   display: 'flex',

@@ -60,6 +60,9 @@ const Navbar = () => {
               'aria-labelledby': 'basic-button',
             }}
           >
+            <Link href="/">
+              <MenuItem onClick={handleClose}>Inicio</MenuItem>
+            </Link>
             {global.map((value) => (
               <MenuItem key={value.path}>
                 <Link

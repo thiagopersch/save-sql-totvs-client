@@ -6,9 +6,9 @@ export const Wrapper = styled(Box)`
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  width: 90%;
+  width: 100%;
   margin: 0 auto;
-  padding: 3rem;
+  padding: 4rem;
 
   ${media.lessThan('medium')`
     padding: 1.5rem;

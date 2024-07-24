@@ -1,9 +1,5 @@
 export const global = [
   {
-    path: '/',
-    name: 'Início',
-  },
-  {
     path: '/search-sentence',
     name: 'Buscar consulta',
   },
@@ -13,7 +9,7 @@ export const global = [
   },
   {
     path: '/read-view',
-    name: 'Ler visão',
+    name: 'Ler visão de consultas',
   },
   {
     path: '/sentence/execute',

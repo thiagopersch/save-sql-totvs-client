@@ -302,7 +302,7 @@ const ExecuteSentece = () => {
                 noRowsVariant: 'linear-progress',
               },
             }}
-            pageSizeOptions={[25, 50, 150]}
+            pageSizeOptions={[25, 50, 100]}
             initialState={{
               pagination: {
                 paginationModel: { page: 0, pageSize: 25 },
