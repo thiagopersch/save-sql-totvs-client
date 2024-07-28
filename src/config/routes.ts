@@ -1,5 +1,9 @@
 export const global = [
   {
+    path: '/get-schema',
+    name: 'Buscar esquema de dataserver',
+  },
+  {
     path: '/search-sentence',
     name: 'Buscar consulta',
   },
