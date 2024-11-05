@@ -1,6 +1,6 @@
 'use client';
 
-import { Box, Typography } from '@mui/material';
+import { Box, CircularProgress } from '@mui/material';
 
 export default function Loading() {
   return (
@@ -13,9 +13,7 @@ export default function Loading() {
         maxHeight: '100%',
       }}
     >
-      <Typography variant="h5" align="center" gutterBottom>
-        Loading...
-      </Typography>
+      <CircularProgress />
     </Box>
   );
 }

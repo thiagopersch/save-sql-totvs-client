@@ -1,4 +1,4 @@
-import { Box, Button, Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import styled, { css } from 'styled-components';
 import media from 'styled-media-query';
 
@@ -22,12 +22,15 @@ export const Title = styled(Typography)`
   margin-bottom: 2rem;
   align-items: center;
   font-weight: bold;
+
+  ${media.lessThan('medium')`
+    font-size: 1.5rem;
+  `}
 `;
 
 export const Form = styled.form`
   display: flex;
   flex-direction: column;
-  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   align-items: stretch;
@@ -45,6 +48,14 @@ export const InputSentences = styled(Box)`
   `}
 `;
 
-export const CTA = styled(Button)`
+export const CTA = styled(Box)`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto;
   margin-bottom: 2rem;
+
+  ${media.lessThan('medium')`
+    width: 100%;
+  `}
 `;

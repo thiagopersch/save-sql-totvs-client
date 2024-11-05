@@ -44,5 +44,7 @@ export const SectionTwo = styled(Box)`
 
 export const CTA = styled(Box)`
   display: flex;
+  justify-content: center;
+  align-items: center;
   margin: 1rem 0;
 `;

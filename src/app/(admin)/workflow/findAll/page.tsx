@@ -1,13 +1,14 @@
 'use client';
 
 import * as S from '@/app/(admin)/styles';
-import ContainerTable from '@/components/ContainerTable';
-import NoRow from '@/components/Table/NoRow';
-import readView from '@/services/totvs/readView';
-import { zodResolver } from '@hookform/resolvers/zod';
+import Table from '@/components/Table';
+import useWorkflow from '@/hooks/Workflow/useWorkflow';
 import {
+  CheckCircle,
+  Close,
   Search as SearchIcon,
   Storage as StorageIcon,
+  Tune as TuneIcon,
   Visibility as VisibilityIcon,
   VisibilityOff as VisibilityOffIcon,
 } from '@mui/icons-material';
@@ -19,100 +20,54 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material';
-import { DataGrid, GridColDef } from '@mui/x-data-grid';
-import dayjs from 'dayjs';
-import { useState } from 'react';
-import { SubmitHandler, useForm } from 'react-hook-form';
+import { GridColDef } from '@mui/x-data-grid';
 import { z } from 'zod';
-import { schema } from './schema';
+import { schema } from '../../../../hooks/Workflow/schema';
 
 type Schema = z.infer<typeof schema> & {
   rows: any[];
 };
 
 const ReadViewPage = () => {
-  const [showPassword, setShowPassword] = useState(false);
-
   const {
-    register,
+    rows,
+    apiRef,
+    errors,
+    isSubmitted,
+    isSubmitting,
+    showPassword,
+    handleClickShowPassword,
+    handleMouseDownPassword,
+    handleReadView,
     handleSubmit,
+    register,
     setValue,
-    watch,
-    formState: { errors, isSubmitting, isSubmitted, isLoading },
-  } = useForm<Schema>({
-    criteriaMode: 'all',
-    mode: 'all',
-    resolver: zodResolver(schema),
-    defaultValues: {
-      filtro: `CODSENTENCA LIKE 'RB%'`,
-      contexto:
-        'CODCOLIGADA=1;CODFILIAL=1;CODSISTEMA=S;CODTIPOCURSO=1;CODUSUARIO=rubeus',
-      dataServerName: 'GlbConsSqlData',
-      username: '',
-      password: '',
-      tbc: '',
-      rows: [],
-    },
-  });
-
-  const rows = watch('rows');
-
-  const handleClickShowPassword = () => setShowPassword((show) => !show);
-
-  const handleMouseDownPassword = (
-    event: React.MouseEvent<HTMLButtonElement>,
-  ) => {
-    event.preventDefault();
-  };
-
-  const handleReadView: SubmitHandler<Schema> = async (formData: Schema) => {
-    const { filtro, contexto, dataServerName, username, password, tbc } =
-      formData;
-
-    try {
-      const result = await readView(
-        dataServerName,
-        filtro,
-        contexto,
-        username,
-        password,
-        tbc,
-      );
-
-      const formattedData = result?.NewDataSet?.GConsSql?.map(
-        (item: any, index: any) => ({
-          id: index,
-          APLICACAO: item.APLICACAO[0],
-          NOMESISTEMA: item.NOMESISTEMA[0],
-          CODCOLIGADA: item.CODCOLIGADA[0],
-          NOMEFANTASIA: item.NOMEFANTASIA[0],
-          CODSENTENCA: item.CODSENTENCA[0],
-          TITULO: item.TITULO,
-          SENTENCA: item.SENTENCA,
-          DTULTALTERACAO: dayjs(item.DTULTALTERACAO[0]).format(
-            'DD/MM/YYYY [às] HH:mm:ss',
-          ),
-          USRULTALTERACAO: item.USRULTALTERACAO[0],
-        }),
-      );
-
-      setValue('rows', formattedData);
-    } catch (error) {
-      console.error(error);
-    }
-  };
+    handleExpandedTable,
+  } = useWorkflow();
 
   const columns: GridColDef[] = [
     { field: 'id', headerName: 'ID', width: 50 },
-    { field: 'APLICACAO', headerName: 'Sistema', width: 100 },
-    { field: 'NOMESISTEMA', headerName: 'Nome Sistema', width: 150 },
     { field: 'CODCOLIGADA', headerName: 'Coligada', width: 100 },
-    { field: 'NOMEFANTASIA', headerName: 'Nome coligada', width: 150 },
-    { field: 'CODSENTENCA', headerName: 'Codigo', width: 200 },
-    { field: 'TITULO', headerName: 'Nome sentença', width: 400 },
+    { field: 'ID', headerName: 'ID da fórmula visual', width: 150 },
+    { field: 'NOME', headerName: 'Nome', width: 600 },
     {
-      field: 'SENTENCA',
-      headerName: 'SQL',
+      field: 'ATIVO',
+      headerName: 'Situação',
+      width: 150,
+      renderCell: (params) =>
+        params.value === '1' ? (
+          <Tooltip title="Ativo" arrow followCursor>
+            <CheckCircle color="success" />
+          </Tooltip>
+        ) : (
+          <Tooltip title="Inativo" arrow followCursor>
+            <Close color="error" />
+          </Tooltip>
+        ),
+    },
+    {
+      field: 'XOMLDATA',
+      headerName: 'XML',
       width: 100,
       renderCell(params) {
         return (
@@ -133,22 +88,12 @@ const ReadViewPage = () => {
         );
       },
     },
-    {
-      field: 'DTULTALTERACAO',
-      headerName: 'Data Última Alteração',
-      width: 200,
-    },
-    {
-      field: 'USRULTALTERACAO',
-      headerName: 'Usuário Última Alteração',
-      width: 200,
-    },
   ];
 
   return (
     <S.Wrapper>
       <S.Title variant="h4" color="primary">
-        Consultas
+        Fórmulas visuais
       </S.Title>
       <S.Form onSubmit={handleSubmit(handleReadView)}>
         <S.InputSentences>
@@ -257,28 +202,19 @@ const ReadViewPage = () => {
           </Button>
         </S.CTA>
       </S.Form>
-      {rows && isSubmitted && (
-        <ContainerTable>
-          <DataGrid
-            rows={rows}
-            columns={columns}
-            loading={isLoading}
-            autoHeight
-            pageSizeOptions={[10, 50, 100]}
-            initialState={{
-              pagination: {
-                paginationModel: { page: 0, pageSize: 10 },
-              },
-              sorting: {
-                sortModel: [{ field: 'year', sort: 'asc' }],
-              },
-            }}
-            slots={{
-              noRowsOverlay: NoRow,
-            }}
-            sx={{ '--DataGrid-overlayHeight': '18.75rem' }}
-          />
-        </ContainerTable>
+      {rows && (
+        <Table
+          rows={rows}
+          columns={columns}
+          isLoading={isSubmitting}
+          apiRef={apiRef}
+          onClick={handleExpandedTable}
+          density="compact"
+          autoHeight
+          sortingField="name"
+          label="Ajustar colunas"
+          icon={<TuneIcon />}
+        />
       )}
       {!rows && (
         <Typography
