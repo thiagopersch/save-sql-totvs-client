@@ -1,4 +1,4 @@
-import { Box, Button, Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import styled, { css } from 'styled-components';
 import media from 'styled-media-query';
 
@@ -48,8 +48,10 @@ export const InputSentences = styled(Box)`
   `}
 `;
 
-export const CTA = styled(Button)`
+export const CTA = styled(Box)`
   display: flex;
+  justify-content: center;
+  align-items: center;
   margin: 0 auto;
   margin-bottom: 2rem;
 
