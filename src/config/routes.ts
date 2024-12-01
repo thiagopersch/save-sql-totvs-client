@@ -1,8 +1,13 @@
 export const global = [
   {
     path: '/get-schema',
-    name: 'Buscar',
+    name: 'Procurar',
     category: 'Dataserver',
+  },
+  {
+    path: '/read-record',
+    name: 'Buscar',
+    category: 'SQL',
   },
   {
     path: '/save-record',
@@ -15,18 +20,13 @@ export const global = [
     category: 'SQL',
   },
   {
-    path: '/search-sentence',
-    name: 'Buscar',
-    category: 'SQL',
-  },
-  {
     path: '/sentence/execute',
     name: 'Executar',
     category: 'SQL',
   },
   {
     path: '/workflow/findAll',
-    name: 'Procurar',
+    name: 'Buscar',
     category: 'Workflow',
   },
 ];

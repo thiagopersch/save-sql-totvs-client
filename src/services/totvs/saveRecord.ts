@@ -6,7 +6,8 @@ const encodeSpecialChars = (str: string) => {
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#039;');
+    .replace(/'/g, '&#039;')
+    .replace(/\n/g, '&#10;');
 };
 
 const decodeSpecialChars = (str: string) => {
@@ -15,7 +16,8 @@ const decodeSpecialChars = (str: string) => {
     .replace(/&gt;/g, '>')
     .replace(/&quot;/g, '"')
     .replace(/&#039;/g, "'")
-    .replace(/&amp;/g, '&');
+    .replace(/&amp;/g, '&')
+    .replace(/&#10;/g, '\n');
 };
 
 export const saveRecord = async (
@@ -30,8 +32,7 @@ export const saveRecord = async (
   password: string,
   tbc: string,
 ) => {
-  const cleanSentenca = encodeSpecialChars(sentenca.replace(/\n/g, ' '));
-  console.log({ cleanSentenca });
+  const cleanSentenca = encodeSpecialChars(sentenca);
 
   const data = {
     dataServerName: dataServerName,

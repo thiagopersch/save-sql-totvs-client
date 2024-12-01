@@ -148,7 +148,7 @@ const ReadViewPage = () => {
   return (
     <S.Wrapper>
       <S.Title variant="h4" color="primary">
-        Consultas
+        Lista de consultas
       </S.Title>
       <S.Form onSubmit={handleSubmit(handleReadView)}>
         <S.InputSentences>
@@ -253,7 +253,7 @@ const ReadViewPage = () => {
             disabled={isSubmitting}
             startIcon={<SearchIcon />}
           >
-            Executar
+            Buscar
           </Button>
         </S.CTA>
       </S.Form>

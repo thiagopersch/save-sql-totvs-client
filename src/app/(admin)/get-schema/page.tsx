@@ -51,9 +51,8 @@ export default function GetSchemaPage() {
   return (
     <S.Wrapper>
       <S.Title variant="h4" color="primary">
-        Buscar dados do dataserver
+        Buscar informações de um dataserver específico
       </S.Title>
-
       <S.Form onSubmit={handleSubmit(onSubmit)}>
         <S.InputSentences>
           <Controller
@@ -64,7 +63,10 @@ export default function GetSchemaPage() {
                 <Autocomplete
                   id="dataServerName"
                   disablePortal
-                  options={filteredOptions}
+                  options={filteredOptions.map((option, index) => ({
+                    ...option,
+                    key: option.code || `option-${index}`,
+                  }))}
                   getOptionLabel={(option) => option.name}
                   isOptionEqualToValue={(option, value) =>
                     option.code === value.code
@@ -86,13 +88,24 @@ export default function GetSchemaPage() {
                     setSearchTerm(newInputValue)
                   }
                   renderOption={(props, option) => (
-                    <Box key={option.code} component="li" {...props}>
+                    <Box
+                      component="li"
+                      {...props}
+                      sx={{
+                        display: 'flex',
+                        flexDirection: {
+                          xs: 'column',
+                          sm: 'row',
+                        },
+                        justifyContent: {
+                          xs: 'center !important',
+                          sm: 'normal !important',
+                        },
+                        alignItems: 'normal !important',
+                      }}
+                    >
                       <Typography color="inherit" sx={{ fontWeight: 'bold' }}>
                         {option.label}
-                      </Typography>
-                      &nbsp;-&nbsp;
-                      <Typography color="text.secondary">
-                        {option.name}
                       </Typography>
                     </Box>
                   )}
@@ -101,7 +114,7 @@ export default function GetSchemaPage() {
                       {...params}
                       label="Dataserver"
                       variant="filled"
-                      error={!!errors.dataServerName}
+                      error={errors.dataServerName !== undefined}
                       helperText={errors.dataServerName?.message}
                       required
                       disabled={isSubmitting}
@@ -125,18 +138,6 @@ export default function GetSchemaPage() {
           />
         </S.InputSentences>
         <S.InputSentences>
-          <TextField
-            type="text"
-            id="tbc"
-            label="TBC"
-            variant="filled"
-            disabled={isSubmitting}
-            helperText={errors.tbc?.message}
-            error={errors.tbc !== undefined}
-            {...register('tbc')}
-            required
-            fullWidth
-          />
           <TextField
             type="text"
             id="username"
@@ -172,6 +173,18 @@ export default function GetSchemaPage() {
                 </InputAdornment>
               ),
             }}
+            required
+            fullWidth
+          />
+          <TextField
+            type="text"
+            id="tbc"
+            label="TBC"
+            variant="filled"
+            disabled={isSubmitting}
+            helperText={errors.tbc?.message}
+            error={errors.tbc !== undefined}
+            {...register('tbc')}
             required
             fullWidth
           />

@@ -41,8 +41,7 @@ export default function useGetSchema() {
       username: '',
       password: '',
       tbc: '',
-      contexto:
-        'CODCOLIGADA=1;CODFILIAL=1;CODSISTEMA=S;CODTIPOCURSO=1;CODUSUARIO=rubeus',
+      contexto: 'CODCOLIGADA=1',
       rows: [],
     },
   });

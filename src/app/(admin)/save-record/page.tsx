@@ -1,11 +1,17 @@
 'use client';
 
-import { saveRecord } from '@/services/saveRecord';
+import * as S from '@/app/(admin)/styles';
+import Loading from '@/app/loading';
+import { saveRecord } from '@/services/totvs/saveRecord';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Editor } from '@monaco-editor/react';
-import Visibility from '@mui/icons-material/Visibility';
-import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import {
+  Save as SaveIcon,
+  Visibility,
+  VisibilityOff,
+} from '@mui/icons-material';
+import {
+  Button,
   IconButton,
   InputAdornment,
   TextField,
@@ -15,7 +21,6 @@ import { useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { schema } from './schema';
-import * as S from './styles';
 
 type Schema = z.infer<typeof schema>;
 
@@ -97,7 +102,7 @@ const SaveRecord = () => {
   return (
     <S.Wrapper>
       <S.Title variant="h4" color="primary">
-        Enviar uma consulta para o TOTVS
+        Salvar consulta
       </S.Title>
       <S.Form onSubmit={handleSubmit(handleSaveRecord)}>
         <S.InputSentences>
@@ -125,6 +130,8 @@ const SaveRecord = () => {
             required
             fullWidth
           />
+        </S.InputSentences>
+        <S.InputSentences>
           <TextField
             type="text"
             id="codSentenca"
@@ -151,46 +158,6 @@ const SaveRecord = () => {
           />
         </S.InputSentences>
         <S.InputSentences>
-          <TextField
-            type="text"
-            id="contexto"
-            label="Contexto"
-            variant="filled"
-            helperText={errors.contexto?.message}
-            error={!!errors.contexto}
-            {...register('contexto')}
-            disabled={isSubmitting}
-            required
-            fullWidth
-          />
-          <TextField
-            type="text"
-            id="dataServerName"
-            label="DataServer"
-            variant="filled"
-            helperText={errors.dataServerName?.message}
-            error={!!errors.dataServerName}
-            {...register('dataServerName')}
-            disabled
-            aria-readonly={true}
-            required
-            fullWidth
-          />
-        </S.InputSentences>
-        <S.InputSentences>
-          <TextField
-            type="text"
-            id="tbc"
-            label="TBC"
-            variant="filled"
-            helperText={errors.tbc?.message}
-            error={!!errors.tbc}
-            {...register('tbc')}
-            placeholder="Ex: http://localhost:8051/"
-            disabled={isSubmitting}
-            required
-            fullWidth
-          />
           <TextField
             type="text"
             id="username"
@@ -229,6 +196,47 @@ const SaveRecord = () => {
             required
             fullWidth
           />
+          <TextField
+            type="text"
+            id="tbc"
+            label="TBC"
+            variant="filled"
+            helperText={errors.tbc?.message}
+            error={!!errors.tbc}
+            {...register('tbc')}
+            placeholder="Ex: http://localhost:8051/"
+            disabled={isSubmitting}
+            required
+            fullWidth
+          />
+        </S.InputSentences>
+        <S.InputSentences>
+          <TextField
+            type="text"
+            id="contexto"
+            label="Contexto"
+            variant="filled"
+            helperText={errors.contexto?.message}
+            error={!!errors.contexto}
+            {...register('contexto')}
+            disabled={isSubmitting}
+            required
+            fullWidth
+          />
+          <TextField
+            type="text"
+            id="dataServerName"
+            label="DataServer"
+            variant="filled"
+            helperText={errors.dataServerName?.message}
+            error={!!errors.dataServerName}
+            {...register('dataServerName')}
+            disabled
+            aria-readonly={true}
+            required
+            fullWidth
+            hidden
+          />
         </S.InputSentences>
         <Editor
           height="40dvh"
@@ -236,7 +244,7 @@ const SaveRecord = () => {
           defaultLanguage="sql"
           theme="vs-dark"
           value={sentenca}
-          loading="Carregando..."
+          loading={<Loading />}
           defaultValue={sentenca}
           onChange={(value) => setValue('sentenca', value || '')}
           options={{
@@ -247,14 +255,17 @@ const SaveRecord = () => {
             wrappingIndent: 'indent',
           }}
         />
-        <S.CTA
-          color="primary"
-          variant="contained"
-          size="large"
-          type="submit"
-          disabled={isSubmitting}
-        >
-          {!isSubmitting ? 'Enviar' : 'Enviando...'}
+        <S.CTA>
+          <Button
+            type="submit"
+            variant="contained"
+            color="primary"
+            size="large"
+            disabled={isSubmitting}
+            startIcon={<SaveIcon />}
+          >
+            Salvar no TOTVS
+          </Button>
         </S.CTA>
       </S.Form>
       {message && <Typography sx={{ color: 'red' }}>{message}</Typography>}

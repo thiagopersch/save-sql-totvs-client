@@ -1,5 +1,6 @@
 'use client';
 
+import * as S from '@/app/(admin)/styles';
 import performSentence from '@/services/sentence/executeSentence';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
@@ -10,22 +11,16 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material';
-import {
-  DataGrid,
-  GridColDef,
-  GridToolbarContainer,
-  GridToolbarExport,
-  useGridApiRef,
-} from '@mui/x-data-grid';
+import { GridColDef, useGridApiRef } from '@mui/x-data-grid';
 import { useEffect, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { schema } from './schema';
-import * as S from './styles';
 
-import ContainerTable from '@/components/ContainerTable';
-import NoRow from '@/components/Table/NoRow';
+import Table from '@/components/Table';
 import {
+  Sync as SyncIcon,
+  Tune as TuneIcon,
   Visibility as VisibilityIcon,
   VisibilityOff as VisibilityOffIcon,
 } from '@mui/icons-material';
@@ -33,26 +28,6 @@ import {
 type Schema = z.infer<typeof schema> & {
   rows: any[];
 };
-
-function CustomToolbar() {
-  return (
-    <GridToolbarContainer>
-      <GridToolbarExport
-        printOptions={{
-          disableToolbarButton: true,
-        }}
-        slotProps={{
-          button: {
-            color: 'primary',
-          },
-          tooltip: {
-            title: 'Exportar',
-          },
-        }}
-      />
-    </GridToolbarContainer>
-  );
-}
 
 const ExecuteSentece = () => {
   const apiRef = useGridApiRef();
@@ -165,11 +140,11 @@ const ExecuteSentece = () => {
 
   return (
     <S.Wrapper>
-      <S.Title variant="h4" color="primary" gutterBottom>
+      <S.Title variant="h4" color="primary">
         Executar sentença
       </S.Title>
-      <form onSubmit={handleSubmit(handleSubmitForm)}>
-        <S.SectionOne>
+      <S.Form onSubmit={handleSubmit(handleSubmitForm)}>
+        <S.InputSentences>
           <TextField
             type="text"
             label="Código da coligada"
@@ -214,8 +189,8 @@ const ExecuteSentece = () => {
             disabled={isSubmitting}
             fullWidth
           />
-        </S.SectionOne>
-        <S.SectionTwo>
+        </S.InputSentences>
+        <S.InputSentences>
           <TextField
             type="text"
             label="Usuário"
@@ -263,58 +238,47 @@ const ExecuteSentece = () => {
             fullWidth
             required
           />
-        </S.SectionTwo>
+        </S.InputSentences>
         <S.CTA>
           <Button
             variant="contained"
             color="primary"
             type="submit"
             size="large"
-            fullWidth
             disabled={isSubmitting}
+            startIcon={<SyncIcon />}
           >
             Executar
           </Button>
         </S.CTA>
-      </form>
+      </S.Form>
       {rows && isSubmitted && (
-        <ContainerTable>
-          <S.CTA>
-            <Button
-              color="primary"
-              size="small"
-              variant="text"
-              onClick={handleExpandedTable}
-            >
-              Ajustar colunas
-            </Button>
-          </S.CTA>
-          <DataGrid
-            rows={rows}
-            columns={columns}
-            loading={!isSubmitSuccessful}
-            apiRef={apiRef}
-            density="compact"
-            autoHeight
-            slotProps={{
-              loadingOverlay: {
-                variant: 'linear-progress',
-                noRowsVariant: 'linear-progress',
-              },
-            }}
-            pageSizeOptions={[25, 50, 100]}
-            initialState={{
-              pagination: {
-                paginationModel: { page: 0, pageSize: 25 },
-              },
-            }}
-            slots={{
-              noRowsOverlay: NoRow,
-              toolbar: CustomToolbar,
-            }}
-            sx={{ '--DataGrid-overlayHeight': '18.75rem' }}
-          />
-        </ContainerTable>
+        <Table
+          rows={rows}
+          columns={columns}
+          isLoading={isSubmitting}
+          apiRef={apiRef}
+          onClick={handleExpandedTable}
+          density="compact"
+          autoHeight
+          sortingField="name"
+          label="Ajustar colunas"
+          icon={<TuneIcon />}
+        />
+      )}
+      {!rows && !isSubmitted && (
+        <Typography
+          sx={{
+            color: 'red',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            alignContent: 'center',
+            fontWeight: 'bold',
+          }}
+        >
+          Algo deu errado
+        </Typography>
       )}
     </S.Wrapper>
   );
