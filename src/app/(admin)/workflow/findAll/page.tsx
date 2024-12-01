@@ -49,6 +49,7 @@ const ReadViewPage = () => {
     { field: 'id', headerName: 'ID', width: 50 },
     { field: 'CODCOLIGADA', headerName: 'Coligada', width: 100 },
     { field: 'ID', headerName: 'ID da fórmula visual', width: 150 },
+    { field: 'IDPAI', headerName: 'ID da fórmula visual pai', width: 150 },
     { field: 'NOME', headerName: 'Nome', width: 600 },
     {
       field: 'ATIVO',

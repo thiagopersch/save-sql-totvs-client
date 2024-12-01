@@ -1,11 +1,17 @@
 'use client';
 
-import readRecord from '@/services/readRecord';
+import * as S from '@/app/(admin)/styles';
+import Loading from '@/app/loading';
+import readRecord from '@/services/totvs/readRecord';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Editor from '@monaco-editor/react';
-import Visibility from '@mui/icons-material/Visibility';
-import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import {
+  Search as SearchIcon,
+  Visibility,
+  VisibilityOff,
+} from '@mui/icons-material';
+import {
+  Button,
   IconButton,
   InputAdornment,
   TextField,
@@ -15,13 +21,12 @@ import { useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { schema } from './schema';
-import * as S from './styles';
 
 type Schema = z.infer<typeof schema> & {
   sentenca?: string;
 };
 
-export default function SearchSentence() {
+export default function ReadRecord() {
   const [showPassword, setShowPassword] = useState(false);
   const [data, setData] = useState<Schema>();
   const [error, setError] = useState('');
@@ -147,46 +152,6 @@ export default function SearchSentence() {
         <S.InputSentences>
           <TextField
             type="text"
-            id="contexto"
-            label="Contexto"
-            variant="filled"
-            {...register('contexto')}
-            disabled={isSubmitting}
-            helperText={errors.contexto?.message}
-            error={!!errors.contexto}
-            required
-            fullWidth
-          />
-          <TextField
-            type="text"
-            id="dataServerName"
-            label="DataServer"
-            variant="filled"
-            aria-readonly={true}
-            {...register('dataServerName')}
-            disabled
-            helperText={errors.dataServerName?.message}
-            error={!!errors.dataServerName}
-            required
-            fullWidth
-          />
-        </S.InputSentences>
-        <S.InputSentences>
-          <TextField
-            type="text"
-            id="tbc"
-            label="TBC"
-            variant="filled"
-            placeholder="Ex: http://localhost:8051/"
-            {...register('tbc')}
-            disabled={isSubmitting}
-            helperText={errors.tbc?.message}
-            error={!!errors.tbc}
-            required
-            fullWidth
-          />
-          <TextField
-            type="text"
             id="username"
             label="Usuário"
             variant="filled"
@@ -223,23 +188,67 @@ export default function SearchSentence() {
             required
             fullWidth
           />
+          <TextField
+            type="text"
+            id="tbc"
+            label="TBC"
+            variant="filled"
+            placeholder="Ex: http://localhost:8051/"
+            {...register('tbc')}
+            disabled={isSubmitting}
+            helperText={errors.tbc?.message}
+            error={!!errors.tbc}
+            required
+            fullWidth
+          />
         </S.InputSentences>
-        <S.CTA
-          color="primary"
-          variant="contained"
-          size="large"
-          type="submit"
-          disabled={isSubmitting}
-        >
-          Buscar consulta
+        <S.InputSentences>
+          <TextField
+            type="text"
+            id="contexto"
+            label="Contexto"
+            variant="filled"
+            {...register('contexto')}
+            disabled={isSubmitting}
+            helperText={errors.contexto?.message}
+            error={!!errors.contexto}
+            required
+            fullWidth
+          />
+          <TextField
+            type="text"
+            id="dataServerName"
+            label="DataServer"
+            variant="filled"
+            aria-readonly={true}
+            {...register('dataServerName')}
+            disabled
+            helperText={errors.dataServerName?.message}
+            error={!!errors.dataServerName}
+            required
+            hidden
+          />
+        </S.InputSentences>
+        <S.CTA>
+          <Button
+            color="primary"
+            variant="contained"
+            size="large"
+            type="submit"
+            disabled={isSubmitting}
+            startIcon={<SearchIcon />}
+          >
+            Buscar
+          </Button>
         </S.CTA>
       </S.Form>
       {data && error === '' && (
         <Editor
-          height="50dvh"
+          height="45dvh"
           language="sql"
           defaultLanguage="sql"
           theme="vs-dark"
+          loading={<Loading />}
           defaultValue={data.sentenca}
           value={data.sentenca}
           options={{ readOnly: true }}

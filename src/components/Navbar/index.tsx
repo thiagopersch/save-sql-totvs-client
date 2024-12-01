@@ -90,7 +90,11 @@ const Navbar = () => {
                 {global
                   .filter((item) => item.category === 'Dataserver')
                   .map((value) => (
-                    <Link href={value.path} style={{ textDecoration: 'none' }}>
+                    <Link
+                      href={value.path}
+                      style={{ textDecoration: 'none' }}
+                      key={value.path}
+                    >
                       <MenuItem key={value.path} onClick={handleClose}>
                         {value.name}
                       </MenuItem>
@@ -118,7 +122,11 @@ const Navbar = () => {
                 {global
                   .filter((item) => item.category === 'SQL')
                   .map((value) => (
-                    <Link href={value.path} style={{ textDecoration: 'none' }}>
+                    <Link
+                      href={value.path}
+                      style={{ textDecoration: 'none' }}
+                      key={value.path}
+                    >
                       <MenuItem key={value.path} onClick={handleClose}>
                         {value.name}
                       </MenuItem>
@@ -146,7 +154,11 @@ const Navbar = () => {
                 {global
                   .filter((item) => item.category === 'Workflow')
                   .map((value) => (
-                    <Link href={value.path} style={{ textDecoration: 'none' }}>
+                    <Link
+                      href={value.path}
+                      style={{ textDecoration: 'none' }}
+                      key={value.path}
+                    >
                       <MenuItem key={value.path} onClick={handleClose}>
                         {value.name}
                       </MenuItem>

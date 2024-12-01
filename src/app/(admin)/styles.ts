@@ -7,7 +7,8 @@ export const Wrapper = styled.div`
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    padding: 4rem;
+    padding: 2rem;
+    flex: 1 1 100%;
     width: 100%;
 
     ${media.lessThan('medium')`
@@ -19,7 +20,7 @@ export const Wrapper = styled.div`
 export const Title = styled(Typography)`
   display: flex;
   justify-content: center;
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
   align-items: center;
   font-weight: bold;
 
