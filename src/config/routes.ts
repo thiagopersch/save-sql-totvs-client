@@ -1,31 +1,31 @@
 const global = [
   {
-    path: '/get-schema',
+    path: '/administrative/get-schema',
     name: 'Procurar',
     category: 'Dataserver',
   },
   {
-    path: '/read-record',
+    path: '/administrative/read-record',
     name: 'Buscar',
     category: 'SQL',
   },
   {
-    path: '/save-record',
+    path: '/administrative/save-record',
     name: 'Salvar registro',
     category: 'SQL',
   },
   {
-    path: '/read-view',
+    path: '/administrative/read-view',
     name: 'Ler visão',
     category: 'SQL',
   },
   {
-    path: '/sentence/execute',
+    path: '/administrative/sentence/execute',
     name: 'Executar',
     category: 'SQL',
   },
   {
-    path: '/workflow/findAll',
+    path: '/administrative/workflow/findAll',
     name: 'Buscar',
     category: 'Workflow',
   },
@@ -39,4 +39,4 @@ const administration = [
   },
 ];
 
-export { global };
+export { administration, global };

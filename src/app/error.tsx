@@ -1,19 +1,25 @@
 'use client';
 
-import { Typography } from '@mui/material';
+import { Alert, Stack } from '@mui/material';
 
-export default function Error() {
+const Error = () => {
   return (
-    <Typography
+    <Stack
       sx={{
+        width: '100%',
+        height: '100dvh',
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        alignContent: 'center',
-        height: '50vh',
       }}
+      spacing={2}
     >
-      !!! ALGO DEU ERRO !!!
-    </Typography>
+      <Alert severity="error">
+        Aconteceu algum erro crítico, por favor entre em contato com o
+        administrador!
+      </Alert>
+    </Stack>
   );
-}
+};
+
+export default Error;

@@ -1,6 +1,43 @@
-import { Box, Typography } from '@mui/material';
+import { Box, Button, Card, Typography } from '@mui/material';
 import styled, { css } from 'styled-components';
 import media from 'styled-media-query';
+
+export const Container = styled(Box)`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100dvh;
+  overflow: hidden !important;
+  background-image: linear-gradient(
+    to right top,
+    #3dd5d6,
+    #36cccd,
+    #2ec3c4,
+    #26bbbb,
+    #1db2b2,
+    #17a5a5,
+    #109999,
+    #088d8d,
+    #057b7b,
+    #036969,
+    #015858,
+    #004747
+  );
+`;
+
+export const CardContainer = styled(Card)`
+  width: 50dvw;
+  margin: 1rem;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  border-radius: 1rem;
+
+  @media screen and (max-width: 768px) {
+    width: 100dvw;
+  }
+`;
 
 export const Wrapper = styled(Box)`
   ${({ theme }) => css`
@@ -9,7 +46,6 @@ export const Wrapper = styled(Box)`
     justify-content: space-between;
     padding: 2rem;
     flex: 1 1 100%;
-    width: 100%;
 
     ${media.lessThan('medium')`
       padding: 1.5rem;
@@ -20,13 +56,9 @@ export const Wrapper = styled(Box)`
 export const Title = styled(Typography)`
   display: flex;
   justify-content: center;
-  margin-bottom: 1rem;
   align-items: center;
   font-weight: bold;
-
-  ${media.lessThan('medium')`
-    font-size: 1.5rem;
-  `}
+  padding: 1.5rem;
 `;
 
 export const Form = styled.form`
@@ -49,14 +81,22 @@ export const InputSentences = styled(Box)`
   `}
 `;
 
-export const CTA = styled(Box)`
+export const Actions = styled(Box)`
   display: flex;
-  justify-content: center;
+  flex-direction: row;
+  justify-content: space-between;
   align-items: center;
-  margin: 0 auto;
-  margin-bottom: 2rem;
+  gap: 1rem;
 
   ${media.lessThan('medium')`
     width: 100%;
   `}
+`;
+
+export const CTA = styled(Button)`
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
 `;

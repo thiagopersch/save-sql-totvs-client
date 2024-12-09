@@ -1,12 +1,13 @@
 'use client';
 
-import * as S from '@/app/(admin)/styles';
+import * as S from '@/app/administrative/styles';
 import Loading from '@/app/loading';
-import readRecord from '@/services/totvs/readRecord';
+import withAuth from '@/app/withAuth';
+import { saveRecord } from '@/services/totvs/saveRecord';
 import { zodResolver } from '@hookform/resolvers/zod';
-import Editor from '@monaco-editor/react';
+import { Editor } from '@monaco-editor/react';
 import {
-  Search as SearchIcon,
+  Save as SaveIcon,
   Visibility,
   VisibilityOff,
 } from '@mui/icons-material';
@@ -22,17 +23,16 @@ import { SubmitHandler, useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { schema } from './schema';
 
-type Schema = z.infer<typeof schema> & {
-  sentenca?: string;
-};
+type Schema = z.infer<typeof schema>;
 
-export default function ReadRecord() {
+const SaveRecord = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const [data, setData] = useState<Schema>();
-  const [error, setError] = useState('');
+  const [message, setMessage] = useState<string>('');
   const {
     register,
     handleSubmit,
+    setValue,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<Schema>({
     criteriaMode: 'all',
@@ -42,6 +42,8 @@ export default function ReadRecord() {
       codColigada: '',
       codSistema: '',
       codSentenca: '',
+      nameSentenca: '',
+      sentenca: '',
       contexto:
         'CODCOLIGADA=1;CODFILIAL=1;CODSISTEMA=S;CODTIPOCURSO=1;CODUSUARIO=rubeus',
       dataServerName: 'GlbConsSqlData',
@@ -51,6 +53,8 @@ export default function ReadRecord() {
     },
   });
 
+  const sentenca = watch('sentenca');
+
   const handleClickShowPassword = () => setShowPassword((show) => !show);
 
   const handleMouseDownPassword = (
@@ -58,59 +62,50 @@ export default function ReadRecord() {
   ) => {
     event.preventDefault();
   };
-
-  const handleReadRecord: SubmitHandler<Schema> = async (formData: Schema) => {
-    const {
-      codColigada,
-      codSentenca,
-      codSistema,
-      contexto,
-      dataServerName,
-      password,
-      username,
-      tbc,
-    } = formData;
-    const primaryKey = `${codColigada};${codSistema};${codSentenca}`;
-
+  const handleSaveRecord: SubmitHandler<Schema> = async (formData: Schema) => {
     try {
-      const result = await readRecord(
+      const {
+        codColigada,
+        codSistema,
+        codSentenca,
+        nameSentenca,
+        sentenca,
+        contexto,
         dataServerName,
-        primaryKey,
+        username,
+        password,
+        tbc,
+      } = formData;
+
+      const result = await saveRecord(
+        codColigada,
+        codSistema,
+        codSentenca,
+        nameSentenca,
+        sentenca,
+        dataServerName,
         contexto,
         username,
         password,
         tbc,
       );
 
-      const gConsSql = result.GlbConsSql.GConsSql[0];
-      const codColigada = gConsSql.CODCOLIGADA[0];
-      const codSentenca = gConsSql.CODSENTENCA[0];
-      const sentenca =
-        result.GlbConsSql.GConsSql[0].TAMANHO[0] !== '0'
-          ? gConsSql.SENTENCA[0]
-          : setError('A consulta não retornou dados.');
+      if (result?.status === 201) {
+        setMessage(result.data);
+      }
 
-      setData({
-        codColigada,
-        codSistema,
-        codSentenca,
-        contexto,
-        dataServerName,
-        password,
-        sentenca,
-        username,
-        tbc,
-      });
+      return result;
     } catch (error) {
-      console.error('Error fetching data:', error);
+      console.error('Erro ao salvar o registro:', error);
     }
   };
+
   return (
     <S.Wrapper>
       <S.Title variant="h4" color="primary">
-        Buscar consulta no TOTVS
+        Salvar consulta
       </S.Title>
-      <S.Form onSubmit={handleSubmit(handleReadRecord)}>
+      <S.Form onSubmit={handleSubmit(handleSaveRecord)}>
         <S.InputSentences>
           <TextField
             type="text"
@@ -118,9 +113,9 @@ export default function ReadRecord() {
             label="Código da Coligada"
             variant="filled"
             {...register('codColigada')}
-            disabled={isSubmitting}
             helperText={errors.codColigada?.message}
             error={!!errors.codColigada}
+            disabled={isSubmitting}
             fullWidth
             required
           />
@@ -129,22 +124,36 @@ export default function ReadRecord() {
             id="codSistema"
             label="Código do Sistema"
             variant="filled"
-            {...register('codSistema')}
-            disabled={isSubmitting}
             helperText={errors.codSistema?.message}
             error={!!errors.codSistema}
+            {...register('codSistema')}
+            disabled={isSubmitting}
             required
             fullWidth
           />
+        </S.InputSentences>
+        <S.InputSentences>
           <TextField
             type="text"
             id="codSentenca"
             label="Código da Sentença"
             variant="filled"
-            {...register('codSentenca')}
-            disabled={isSubmitting}
             helperText={errors.codSentenca?.message}
             error={!!errors.codSentenca}
+            {...register('codSentenca')}
+            disabled={isSubmitting}
+            required
+            fullWidth
+          />
+          <TextField
+            type="text"
+            id="nameSentenca"
+            label="Nome da Sentença"
+            variant="filled"
+            helperText={errors.nameSentenca?.message}
+            error={!!errors.nameSentenca}
+            {...register('nameSentenca')}
+            disabled={isSubmitting}
             required
             fullWidth
           />
@@ -155,32 +164,32 @@ export default function ReadRecord() {
             id="username"
             label="Usuário"
             variant="filled"
-            {...register('username')}
-            disabled={isSubmitting}
             helperText={errors.username?.message}
             error={!!errors.username}
+            {...register('username')}
+            disabled={isSubmitting}
             required
             fullWidth
           />
           <TextField
-            id="password"
             type={showPassword ? 'text' : 'password'}
+            id="password"
             label="Senha"
             variant="filled"
-            {...register('password')}
-            disabled={isSubmitting}
             helperText={errors.password?.message}
             error={!!errors.password}
+            {...register('password')}
+            disabled={isSubmitting}
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
                   <IconButton
-                    aria-label="toggle password visibility"
+                    aria-label="Mostrar senha"
                     onClick={handleClickShowPassword}
                     onMouseDown={handleMouseDownPassword}
                     edge="end"
                   >
-                    {showPassword ? <Visibility /> : <VisibilityOff />}
+                    {showPassword ? <VisibilityOff /> : <Visibility />}
                   </IconButton>
                 </InputAdornment>
               ),
@@ -193,11 +202,11 @@ export default function ReadRecord() {
             id="tbc"
             label="TBC"
             variant="filled"
-            placeholder="Ex: http://localhost:8051/"
-            {...register('tbc')}
-            disabled={isSubmitting}
             helperText={errors.tbc?.message}
             error={!!errors.tbc}
+            {...register('tbc')}
+            placeholder="Ex: http://localhost:8051/"
+            disabled={isSubmitting}
             required
             fullWidth
           />
@@ -208,10 +217,10 @@ export default function ReadRecord() {
             id="contexto"
             label="Contexto"
             variant="filled"
-            {...register('contexto')}
-            disabled={isSubmitting}
             helperText={errors.contexto?.message}
             error={!!errors.contexto}
+            {...register('contexto')}
+            disabled={isSubmitting}
             required
             fullWidth
           />
@@ -220,54 +229,49 @@ export default function ReadRecord() {
             id="dataServerName"
             label="DataServer"
             variant="filled"
-            aria-readonly={true}
-            {...register('dataServerName')}
-            disabled
             helperText={errors.dataServerName?.message}
             error={!!errors.dataServerName}
+            {...register('dataServerName')}
+            disabled
+            aria-readonly={true}
             required
+            fullWidth
             hidden
           />
         </S.InputSentences>
-        <S.CTA>
-          <Button
-            color="primary"
-            variant="contained"
-            size="large"
-            type="submit"
-            disabled={isSubmitting}
-            startIcon={<SearchIcon />}
-          >
-            Buscar
-          </Button>
-        </S.CTA>
-      </S.Form>
-      {data && error === '' && (
         <Editor
-          height="45dvh"
+          height="40dvh"
           language="sql"
           defaultLanguage="sql"
           theme="vs-dark"
+          value={sentenca}
           loading={<Loading />}
-          defaultValue={data.sentenca}
-          value={data.sentenca}
-          options={{ readOnly: true }}
-        />
-      )}
-      {error && (
-        <Typography
-          sx={{
-            color: 'red',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            alignContent: 'center',
-            fontWeight: 'bold',
+          defaultValue={sentenca}
+          onChange={(value) => setValue('sentenca', value || '')}
+          options={{
+            automaticLayout: true,
+            formatOnType: true,
+            formatOnPaste: true,
+            wordWrap: 'on',
+            wrappingIndent: 'indent',
           }}
-        >
-          {error}
-        </Typography>
-      )}
+        />
+        <S.CTA>
+          <Button
+            type="submit"
+            variant="contained"
+            color="primary"
+            size="large"
+            disabled={isSubmitting}
+            startIcon={<SaveIcon />}
+          >
+            Salvar no TOTVS
+          </Button>
+        </S.CTA>
+      </S.Form>
+      {message && <Typography sx={{ color: 'red' }}>{message}</Typography>}
     </S.Wrapper>
   );
-}
+};
+
+export default withAuth(SaveRecord);

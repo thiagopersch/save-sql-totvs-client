@@ -1,8 +1,9 @@
 'use client';
 
-import * as S from '@/app/(admin)/styles';
+import * as S from '@/app/administrative/styles';
+import withAuth from '@/app/withAuth';
 import Table from '@/components/Table';
-import useWorkflow from '@/hooks/Workflow/useWorkflow';
+import useWorkflow from '@/hooks/admin/Workflow/useWorkflow';
 import {
   CheckCircle,
   Close,
@@ -21,12 +22,6 @@ import {
   Typography,
 } from '@mui/material';
 import { GridColDef } from '@mui/x-data-grid';
-import { z } from 'zod';
-import { schema } from '../../../../hooks/Workflow/schema';
-
-type Schema = z.infer<typeof schema> & {
-  rows: any[];
-};
 
 const ReadViewPage = () => {
   const {
@@ -235,4 +230,4 @@ const ReadViewPage = () => {
   );
 };
 
-export default ReadViewPage;
+export default withAuth(ReadViewPage);

@@ -1,6 +1,6 @@
 'use client';
 
-import { global } from '@/config/routes';
+import { administration, global } from '@/config/routes';
 import { Menu as MenuIcon } from '@mui/icons-material';
 import {
   AppBar,
@@ -165,6 +165,26 @@ const Navbar = () => {
                     </Link>
                   ))}
               </Menu>
+
+              {administration
+                .filter((item) => item.category === 'login')
+                .map((value) => (
+                  <Link
+                    href={value.path}
+                    style={{ textDecoration: 'none' }}
+                    key={value.path}
+                  >
+                    <Button
+                      id="login-button"
+                      aria-controls={open ? 'login-button' : undefined}
+                      aria-haspopup="true"
+                      aria-expanded={open ? 'true' : undefined}
+                      color="inherit"
+                    >
+                      Login
+                    </Button>
+                  </Link>
+                ))}
             </>
           )}
           {useQuery && (

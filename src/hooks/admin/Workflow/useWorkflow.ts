@@ -75,9 +75,8 @@ export default function useWorkflow() {
       );
 
       const workflowData = result?.NewDataSet?.GWORKFLOW;
-      console.log(workflowData);
 
-      if (!Array.isArray(workflowData)) {
+      if (!isArray(workflowData)) {
         console.error('GWORKFLOW não é um array ou está indefinido');
         return;
       }

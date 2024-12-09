@@ -1,4 +1,4 @@
-import SearchSentencePage from './(admin)/read-record/page';
+import SearchSentencePage from './administrative/read-record/page';
 
 export default function Home() {
   return <SearchSentencePage />;

@@ -1,8 +1,9 @@
 'use client';
 
-import * as S from '@/app/(admin)/styles';
+import * as S from '@/app/administrative/styles';
+import withAuth from '@/app/withAuth';
 import Table from '@/components/Table';
-import useGetSchema from '@/hooks/GetSchema/useGetSchema';
+import useGetSchema from '@/hooks/admin/GetSchema/useGetSchema';
 import {
   Search as SearchIcon,
   Tune as TuneIcon,
@@ -24,7 +25,7 @@ import {
 } from '@mui/material';
 import { Controller } from 'react-hook-form';
 
-export default function GetSchemaPage() {
+const GetSchemaPage = () => {
   const {
     apiRef,
     columns,
@@ -259,4 +260,6 @@ export default function GetSchemaPage() {
       )}
     </S.Wrapper>
   );
-}
+};
+
+export default withAuth(GetSchemaPage);

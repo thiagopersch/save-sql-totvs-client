@@ -1,11 +1,13 @@
 'use client';
 
 import Navbar from '@/components/Navbar';
+import GlobalStyles from '@/styles/global';
 import { theme } from '@/styles/theme';
 import themeStyledComponent from '@/styles/themeStyledComponent';
 import { ThemeProvider } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { ThemeProvider as ThemeProviderStyledComponents } from 'styled-components';
+import './globals.css';
 import Loading from './loading';
 
 type ThemeProviderPageProps = {
@@ -14,19 +16,21 @@ type ThemeProviderPageProps = {
 
 const ThemeProviderPage = ({ children }: ThemeProviderPageProps) => {
   const [isLoading, setIsLoading] = useState(true);
+  const [token, setToken] = useState<string | null>(null);
 
   useEffect(() => {
-    if (children) {
-      setIsLoading(false);
-    }
-  }, [children]);
+    const storedToken = localStorage.getItem('token');
+    setToken(storedToken);
+    setIsLoading(false);
+  }, []);
 
   return (
     <ThemeProvider theme={theme}>
       <ThemeProviderStyledComponents theme={themeStyledComponent}>
+        <GlobalStyles />
         {!isLoading ? (
           <>
-            <Navbar />
+            {!!token && <Navbar />}
             {children}
           </>
         ) : (

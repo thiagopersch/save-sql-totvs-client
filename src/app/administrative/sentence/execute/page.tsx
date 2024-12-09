@@ -1,6 +1,6 @@
 'use client';
 
-import * as S from '@/app/(admin)/styles';
+import * as S from '@/app/administrative/styles';
 import performSentence from '@/services/sentence/executeSentence';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
@@ -17,6 +17,7 @@ import { SubmitHandler, useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { schema } from './schema';
 
+import withAuth from '@/app/withAuth';
 import Table from '@/components/Table';
 import {
   Sync as SyncIcon,
@@ -284,4 +285,4 @@ const ExecuteSentece = () => {
   );
 };
 
-export default ExecuteSentece;
+export default withAuth(ExecuteSentece);

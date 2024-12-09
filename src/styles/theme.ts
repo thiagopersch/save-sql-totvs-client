@@ -6,7 +6,10 @@ export const theme = createTheme({
     primary: {
       main: '#0DA6A6',
       light: '#3DD5D6',
-      // dark: "#004747",
+      contrastText: '#FFFFFF',
+    },
+    secondary: {
+      main: '#004747',
       contrastText: '#FFFFFF',
     },
     error: {
@@ -19,6 +22,13 @@ export const theme = createTheme({
     },
     success: {
       main: '#2ED47A',
+    },
+    info: {
+      main: '#1155CC',
+    },
+    background: {
+      default: '#FFFFFF',
+      paper: '#f0f0f0',
     },
     common: {
       black: '#1A1A1A',

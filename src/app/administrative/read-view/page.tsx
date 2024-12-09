@@ -1,6 +1,7 @@
 'use client';
 
-import * as S from '@/app/(admin)/styles';
+import * as S from '@/app/administrative/styles';
+import withAuth from '@/app/withAuth';
 import ContainerTable from '@/components/ContainerTable';
 import NoRow from '@/components/Table/NoRow';
 import readView from '@/services/totvs/readView';
@@ -298,4 +299,4 @@ const ReadViewPage = () => {
   );
 };
 
-export default ReadViewPage;
+export default withAuth(ReadViewPage);
