@@ -1,4 +1,4 @@
-export const global = [
+const global = [
   {
     path: '/get-schema',
     name: 'Procurar',
@@ -30,3 +30,13 @@ export const global = [
     category: 'Workflow',
   },
 ];
+
+const administration = [
+  {
+    path: '/login',
+    name: 'Login',
+    category: 'login',
+  },
+];
+
+export { global };
