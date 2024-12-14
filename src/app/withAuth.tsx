@@ -12,7 +12,7 @@ export default function withAuth(Component: React.FC) {
       if (!token) {
         router.push('/login');
       }
-    }, []);
+    }, [router]);
 
     return <Component />;
   };

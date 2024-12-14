@@ -87,7 +87,12 @@ const LoginPage = () => {
               />
             </S.InputSentences>
             <S.Actions>
-              <S.CTA type="button" color="secondary">
+              <S.CTA
+                type="button"
+                color="secondary"
+                variant="outlined"
+                size="large"
+              >
                 Recuperar senha
               </S.CTA>
               <S.CTA

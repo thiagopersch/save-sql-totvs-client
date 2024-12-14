@@ -1,3 +1,4 @@
+import { useAuth } from '@/app/AuthContext';
 import { login } from '@/services/auth';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
@@ -23,7 +24,7 @@ export default function useLogin() {
     mode: 'all',
     resolver: zodResolver(schema),
     defaultValues: {
-      email: 'administrador@rubeus.com.br',
+      email: 'administrador@rubeus.com',
       password: '#mpresaPC10',
     },
   });
@@ -34,16 +35,16 @@ export default function useLogin() {
   ) => {
     event.preventDefault();
   };
+  const { setAuthState } = useAuth();
 
   const onSubmit = async (data: Schema) => {
-    console.log(data);
     try {
-      const { access_token } = await login(data.email, data.password);
-      localStorage.setItem('token', access_token);
-      router.push('/administrative');
+      const { token, user } = await login(data.email, data.password);
+      setAuthState(user, token);
+      router.push('/administrative/home');
     } catch (err: string | any) {
       setErrorMessage(
-        err.response?.data?.message ||
+        err.error.message ||
           'Não foi possível realizar o login, por favor entre em contato com o administrador.',
       );
     }

@@ -90,6 +90,7 @@ export const Actions = styled(Box)`
 
   ${media.lessThan('medium')`
     width: 100%;
+    flex-direction: column-reverse;
   `}
 `;
 

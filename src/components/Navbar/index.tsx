@@ -1,6 +1,196 @@
 'use client';
 
-import { administration, global } from '@/config/routes';
+import { useAuth } from '@/app/AuthContext';
+import { routes } from '@/config/routes'; // Certifique-se de que o caminho está correto
+import {
+  ArrowDropDown,
+  Logout,
+  Menu as MenuIcon,
+  Person,
+} from '@mui/icons-material';
+import {
+  AppBar,
+  Box,
+  Button,
+  Drawer,
+  IconButton,
+  Menu,
+  MenuItem,
+  Toolbar,
+  Typography,
+  useMediaQuery,
+} from '@mui/material';
+import Image from 'next/image';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import DrawerList from './DrawerList';
+
+const Navbar = () => {
+  const { user, isAuthenticated, logout } = useAuth();
+  const isMobile = useMediaQuery('(max-width: 768px)');
+  const router = useRouter();
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [subMenuEl, setSubMenuEl] = useState<null | HTMLElement>(null);
+  const [currentSubMenu, setCurrentSubMenu] = useState<string | null>(null);
+  const [openDrawer, setOpenDrawer] = useState(false);
+  const open = Boolean(anchorEl);
+  const openSubMenu = Boolean(subMenuEl);
+
+  const toggleDrawer = (newOpen: boolean) => () => {
+    setOpenDrawer(newOpen);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+    setSubMenuEl(null);
+    setCurrentSubMenu(null);
+  };
+
+  const handleSubMenuClick = (
+    event: React.MouseEvent<HTMLButtonElement>,
+    category: string,
+  ) => {
+    setSubMenuEl(event.currentTarget);
+    setCurrentSubMenu(category);
+  };
+
+  return (
+    <Box sx={{ flexGrow: 1 }}>
+      <AppBar position="static">
+        <Toolbar>
+          <Box sx={{ mr: '1rem' }}>
+            <Link href="/" passHref>
+              <Image
+                src="/rubeus.svg"
+                width={48}
+                height={48}
+                alt="logo-rubeus.svg"
+              />
+            </Link>
+          </Box>
+          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+            Integração Rubeus
+          </Typography>
+          {!isMobile && (
+            <>
+              {routes.map((route) => (
+                <div key={route.id}>
+                  <Button
+                    id={`${route.id}-button`}
+                    aria-controls={open ? `${route.id}-menu` : undefined}
+                    aria-haspopup="true"
+                    aria-expanded={open ? 'true' : undefined}
+                    onClick={(event) =>
+                      handleSubMenuClick(event, route.id ?? '')
+                    }
+                    color="inherit"
+                  >
+                    {route.name}
+                  </Button>
+                  <Menu
+                    anchorEl={subMenuEl}
+                    open={openSubMenu && currentSubMenu === route.id}
+                    onClose={handleClose}
+                    MenuListProps={{
+                      'aria-labelledby': `${route.id}-button`,
+                    }}
+                  >
+                    {route.children?.map((child) => (
+                      <Link
+                        href={child.path}
+                        style={{ textDecoration: 'none' }}
+                        key={child.path}
+                      >
+                        <MenuItem onClick={handleClose}>{child.name}</MenuItem>
+                      </Link>
+                    ))}
+                  </Menu>
+                </div>
+              ))}
+              {isAuthenticated ? (
+                <>
+                  <Button
+                    color="inherit"
+                    onClick={(event) => setAnchorEl(event.currentTarget)}
+                    endIcon={<ArrowDropDown />}
+                  >
+                    {user || 'Usuário'}
+                  </Button>
+                  <Menu
+                    anchorEl={anchorEl}
+                    open={Boolean(anchorEl)}
+                    onClose={() => setAnchorEl(null)}
+                    anchorOrigin={{
+                      vertical: 'bottom',
+                      horizontal: 'right',
+                    }}
+                    sx={{
+                      '& .MuiMenu-paper': {
+                        minWidth: '8dvw',
+                      },
+                      display: 'flex',
+                      flexDirection: 'column',
+                    }}
+                  >
+                    <MenuItem
+                      onClick={() => router.push('/administrative/profile')}
+                      sx={{
+                        display: 'flex',
+                        gap: '1rem',
+                        alignContent: 'center',
+                        padding: '0.8rem',
+                      }}
+                    >
+                      <Person /> Perfil
+                    </MenuItem>
+                    <MenuItem
+                      className="text-red-700"
+                      onClick={logout}
+                      sx={{
+                        display: 'flex',
+                        gap: '1rem',
+                        alignContent: 'center',
+                        padding: '0.8rem',
+                      }}
+                    >
+                      <Logout /> Sair
+                    </MenuItem>
+                  </Menu>
+                </>
+              ) : (
+                <Button color="inherit" onClick={() => router.push('/login')}>
+                  Login
+                </Button>
+              )}
+            </>
+          )}
+          {isMobile && (
+            <>
+              <IconButton onClick={toggleDrawer(true)}>
+                <MenuIcon />
+              </IconButton>
+              <Drawer
+                anchor="right"
+                open={openDrawer}
+                onClose={toggleDrawer(false)}
+              >
+                <DrawerList open={openDrawer} toggleDrawer={toggleDrawer} />
+              </Drawer>
+            </>
+          )}
+        </Toolbar>
+      </AppBar>
+    </Box>
+  );
+};
+
+export default Navbar;
+
+/* 'use client';
+
+import { useAuth } from '@/app/AuthContext';
+import { global } from '@/config/routes';
 import { Menu as MenuIcon } from '@mui/icons-material';
 import {
   AppBar,
@@ -16,22 +206,24 @@ import {
 } from '@mui/material';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import DrawerList from './DrawerList';
 
 const Navbar = () => {
-  const useQuery = useMediaQuery('(max-width: 768px)');
+  const { user, isAuthenticated, logout } = useAuth();
+  const isMobile = useMediaQuery('(max-width: 768px)');
+  const router = useRouter();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [subMenuEl, setSubMenuEl] = useState<null | HTMLElement>(null);
   const [currentSubMenu, setCurrentSubMenu] = useState<string | null>(null);
   const [openDrawer, setOpenDrawer] = useState(false);
+  const open = Boolean(anchorEl);
+  const openSubMenu = Boolean(subMenuEl);
 
   const toggleDrawer = (newOpen: boolean) => () => {
     setOpenDrawer(newOpen);
   };
-
-  const open = Boolean(anchorEl);
-  const openSubMenu = Boolean(subMenuEl);
 
   const handleClose = () => {
     setAnchorEl(null);
@@ -67,7 +259,7 @@ const Navbar = () => {
           <Button color="inherit" LinkComponent={Link} href="/">
             Início
           </Button>
-          {!useQuery && (
+          {!isMobile && (
             <>
               <Button
                 id="Dataserver-button"
@@ -166,28 +358,37 @@ const Navbar = () => {
                   ))}
               </Menu>
 
-              {administration
-                .filter((item) => item.category === 'login')
-                .map((value) => (
-                  <Link
-                    href={value.path}
-                    style={{ textDecoration: 'none' }}
-                    key={value.path}
+              {isAuthenticated ? (
+                <>
+                  <Button
+                    color="inherit"
+                    onClick={(event) => setAnchorEl(event.currentTarget)}
                   >
-                    <Button
-                      id="login-button"
-                      aria-controls={open ? 'login-button' : undefined}
-                      aria-haspopup="true"
-                      aria-expanded={open ? 'true' : undefined}
-                      color="inherit"
+                    {user || 'Usuário'}
+                  </Button>
+                  <Menu
+                    anchorEl={anchorEl}
+                    open={Boolean(anchorEl)}
+                    onClose={() => setAnchorEl(null)}
+                  >
+                    <MenuItem
+                      onClick={() => router.push('/administrative/profile')}
                     >
-                      Login
-                    </Button>
-                  </Link>
-                ))}
+                      Perfil
+                    </MenuItem>
+                    <MenuItem className="text-red-700" onClick={logout}>
+                      Sair
+                    </MenuItem>
+                  </Menu>
+                </>
+              ) : (
+                <Button color="inherit" onClick={() => router.push('/login')}>
+                  Login
+                </Button>
+              )}
             </>
           )}
-          {useQuery && (
+          {isMobile && (
             <>
               <IconButton onClick={toggleDrawer(true)}>
                 <MenuIcon />
@@ -208,3 +409,4 @@ const Navbar = () => {
 };
 
 export default Navbar;
+ */

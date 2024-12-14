@@ -1,5 +1,5 @@
-import SearchSentencePage from './administrative/read-record/page';
+import Administrative from './administrative/home/page';
 
 export default function Home() {
-  return <SearchSentencePage />;
+  return <Administrative />;
 }
