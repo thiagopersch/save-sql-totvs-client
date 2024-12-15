@@ -1,4 +1,4 @@
-import getSchema from '@/services/totvs/getSchema';
+import getSchema from '@/requests/queries/totvs/getSchema';
 import { dataservers } from '@/utils/dataservers';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { SelectChangeEvent } from '@mui/material';
@@ -70,7 +70,7 @@ export default function useGetSchema() {
 
   const onSubmit = async (data: Schema) => {
     const { dataServerName, username, password, tbc, contexto } = data;
-    const dataServerCode = data.dataServerName;
+    const dataServerCode = dataServerName;
 
     try {
       const result = await getSchema(

@@ -2,56 +2,17 @@ type Route = {
   id?: string;
   path: string;
   name: string;
+  prefix?: string;
   category?: string;
   children?: Route[];
 };
 
-const global = [
-  {
-    path: '/administrative/get-schema',
-    name: 'Procurar',
-    category: 'Dataserver',
-  },
-  {
-    path: '/administrative/read-record',
-    name: 'Buscar',
-    category: 'SQL',
-  },
-  {
-    path: '/administrative/save-record',
-    name: 'Salvar registro',
-    category: 'SQL',
-  },
-  {
-    path: '/administrative/read-view',
-    name: 'Ler visão',
-    category: 'SQL',
-  },
-  {
-    path: '/administrative/sentence/execute',
-    name: 'Executar',
-    category: 'SQL',
-  },
-  {
-    path: '/administrative/workflow/findAll',
-    name: 'Buscar',
-    category: 'Workflow',
-  },
-];
-
-const administration = [
-  {
-    path: '/login',
-    name: 'Login',
-    category: 'login',
-  },
-];
-
-const routes: Route[] = [
+const Routes: Route[] = [
   {
     id: 'automations',
     path: '/automations',
     name: 'Automações',
+    prefix: 'automations',
     children: [
       {
         id: 'dataservers',
@@ -116,8 +77,29 @@ const routes: Route[] = [
         path: '/users',
         name: 'Usuários',
       },
+      {
+        id: 'tbc',
+        path: '/tbc',
+        name: 'TBC',
+      },
     ],
   },
 ];
 
-export { administration, global, routes };
+function buildRoutesWithPrefix(routes: Route[], parentPrefix = ''): Route[] {
+  return routes.map((route) => {
+    const fullPath = parentPrefix ? `${parentPrefix}${route.path}` : route.path;
+
+    return {
+      ...route,
+      path: fullPath,
+      children: route.children
+        ? buildRoutesWithPrefix(route.children, fullPath)
+        : undefined,
+    };
+  });
+}
+
+const updatedRoutes = buildRoutesWithPrefix(Routes);
+
+export { updatedRoutes };

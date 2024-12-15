@@ -15,6 +15,8 @@ type TableProps = {
   setRows?: any;
   icon?: React.ReactNode;
   onClick?: () => void;
+  buttons?: string[]; // Nova prop para os botões
+  buttonActions?: { [key: string]: () => void }; // Funções específicas para os botões
 } & DataGridProps;
 
 const Table = ({
@@ -27,8 +29,19 @@ const Table = ({
   setRows,
   onClick,
   icon,
+  buttons = ['add', 'columns', 'export'], // Botões padrão
+  label,
+  buttonActions = {}, // Funções para os botões
   ...rest
 }: TableProps) => {
+  // Ajustar o label com base nos botões selecionados
+  const getLabel = (button: string) => {
+    if (button === 'add') return label || 'Adicionar';
+    if (button === 'columns') return 'Ajustar Colunas';
+    if (button === 'export') return 'Exportar';
+    return label; // Retorna o label original, caso não tenha ajustes
+  };
+
   return (
     <ContainerTable>
       <DataGrid
@@ -55,8 +68,11 @@ const Table = ({
             <TableToolbar
               href={rest.href}
               onClick={onClick}
-              label={rest.label}
+              label={label}
               icon={icon}
+              buttons={buttons}
+              getLabel={getLabel} // Passando a função getLabel
+              buttonActions={buttonActions} // Passando as funções para os botões
             />
           ),
         }}
