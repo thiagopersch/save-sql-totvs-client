@@ -7,22 +7,24 @@ export const Wrapper = styled(Box)`
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    /* padding: 2rem; */
+    padding: 2rem;
     flex: 1 1 100%;
     width: 100%;
+
+    ${media.lessThan('medium')`
+      padding: 1rem;
+    `}
   `}
 `;
 
 export const Title = styled(Typography)`
   display: flex;
-  justify-content: center;
-  margin-bottom: 1rem;
+  justify-content: flex-start;
   align-items: center;
   font-weight: bold;
-
   ${media.lessThan('medium')`
     font-size: 1.5rem;
-  `}
+  `};
 `;
 
 export const Form = styled.form`

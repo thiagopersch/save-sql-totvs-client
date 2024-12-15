@@ -43,10 +43,7 @@ export default function useLogin() {
       setAuthState(user, token);
       router.push('/home');
     } catch (err: string | any) {
-      setErrorMessage(
-        err.error.message ||
-          'Não foi possível realizar o login, por favor entre em contato com o administrador.',
-      );
+      setErrorMessage(err.response.data.message);
     }
   };
 

@@ -17,4 +17,6 @@ export type UserForm = Pick<
 export type FormattedUsers = User & {
   formattedCreatedAt?: string;
   formattedUpdatedAt?: string;
+  formattedStatus?: string;
+  formattedChangePassword?: string;
 };
